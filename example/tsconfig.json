@@ -1,0 +1,10 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@majornutcracker/react-native-selectable-text": ["../src/index"],
+      "@majornutcracker/react-native-selectable-text/*": ["../src/*"]
+    }
+  }
+}
