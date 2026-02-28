@@ -1,15 +1,17 @@
 {
   "name": "@majornutcracker/react-native-selectable-text",
   "version": "0.1.0",
-  "description": "Gemini saidA powerful MajorNutcracker extension for react-native-webview that enables advanced text selection, custom popups, and persistent highlighting via Rangy integration. Built with Expo Modules, it provides a high-performance native bridge (Swift/Kotlin) to seamlessly serialize, sync, and restore web content selections across both Vanilla and Expo projects.",
+  "description": "A powerful MajorNutcracker extension for react-native-webview that enables advanced text selection, custom popups, and persistent highlighting via Rangy integration. Built with Expo Modules, it provides a high-performance native bridge (Swift/Kotlin) to seamlessly serialize, sync, and restore web content selections across both Vanilla and Expo projects.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "type": "module",
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
+    "format": "prettier --write .",
+    "prepare": "expo-module prepare && husky install",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "open:ios": "xed example/ios",
@@ -28,16 +30,35 @@
   "author": "MajorNutcracker <joshiparsa@gmail.com> (JoshuaPariona)",
   "license": "MIT",
   "homepage": "https://todo.com#readme",
-  "dependencies": {},
   "devDependencies": {
+    "@commitlint/cli": "^20.4.2",
+    "@commitlint/config-conventional": "^20.4.2",
+    "@eslint/js": "^10.0.1",
     "@types/react": "~19.1.1",
-    "expo-module-scripts": "^55.0.2",
+    "eslint": "^9.0.0",
+    "eslint-plugin-prettier": "^5.5.5",
     "expo": "^55.0.3",
-    "react-native": "0.82.1"
+    "expo-module-scripts": "^55.0.2",
+    "globals": "^17.3.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^16.3.0",
+    "prettier": "^3.8.1",
+    "react-native": "0.82.1",
+    "typescript-eslint": "^8.56.1"
   },
   "peerDependencies": {
     "expo": "*",
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-webview": ">=13.0.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "prettier --write",
+      "expo-module lint"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
   }
 }

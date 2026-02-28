@@ -1,8 +1,10 @@
-import * as React from 'react';
+import * as React from "react";
 
-import { MajornutcrackerReactNativeSelectableTextViewProps } from './MajornutcrackerReactNativeSelectableText.types';
+import { MajornutcrackerReactNativeSelectableTextViewProps } from "./MajornutcrackerReactNativeSelectableText.types";
 
-export default function MajornutcrackerReactNativeSelectableTextView(props: MajornutcrackerReactNativeSelectableTextViewProps) {
+export default function MajornutcrackerReactNativeSelectableTextView(
+  props: MajornutcrackerReactNativeSelectableTextViewProps
+) {
   return (
     <div>
       <iframe

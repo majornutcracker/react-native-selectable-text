@@ -1,6 +1,6 @@
-import { NativeModule, requireNativeModule } from 'expo';
+import { NativeModule, requireNativeModule } from "expo";
 
-import { MajornutcrackerReactNativeSelectableTextModuleEvents } from './MajornutcrackerReactNativeSelectableText.types';
+import { MajornutcrackerReactNativeSelectableTextModuleEvents } from "./MajornutcrackerReactNativeSelectableText.types";
 
 declare class MajornutcrackerReactNativeSelectableTextModule extends NativeModule<MajornutcrackerReactNativeSelectableTextModuleEvents> {
   PI: number;
@@ -9,4 +9,6 @@ declare class MajornutcrackerReactNativeSelectableTextModule extends NativeModul
 }
 
 // This call loads the native module object from the JSI.
-export default requireNativeModule<MajornutcrackerReactNativeSelectableTextModule>('MajornutcrackerReactNativeSelectableText');
+export default requireNativeModule<MajornutcrackerReactNativeSelectableTextModule>(
+  "MajornutcrackerReactNativeSelectableText"
+);

@@ -4,6 +4,8 @@
     "modules": ["MajornutcrackerReactNativeSelectableTextModule"]
   },
   "android": {
-    "modules": ["com.majornutcracker.reactnativeselectablewebview.MajornutcrackerReactNativeSelectableTextModule"]
+    "modules": [
+      "com.majornutcracker.reactnativeselectablewebview.MajornutcrackerReactNativeSelectableTextModule"
+    ]
   }
 }
