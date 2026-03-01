@@ -11,8 +11,8 @@ class MajornutcrackerReactNativeSelectableTextModule : Module() {
       "1.0.0"
     }
 
-    Function("hello") {
-      "Hello world! 👋"
+    Function("setMenuEnabled") { enabled: Boolean ->
+      // Implementation would go here
     }
   }
 }

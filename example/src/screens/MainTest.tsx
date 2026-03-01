@@ -2,7 +2,7 @@ import SelectableTextViewModule, {
   RootBlocks,
   SelectableTextView,
 } from "@majornutcracker/react-native-selectable-text";
-import { ScrollView, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const guideContent: RootBlocks = [
@@ -156,9 +156,5 @@ const styles = {
   container: {
     flex: 1,
     backgroundColor: "#eee",
-  },
-  view: {
-    flex: 1,
-    height: 200,
   },
 };

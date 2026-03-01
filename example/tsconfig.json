@@ -3,6 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
+      "@/*": ["./src/*"],
       "@majornutcracker/react-native-selectable-text": ["../src/index"],
       "@majornutcracker/react-native-selectable-text/*": ["../src/*"]
     }

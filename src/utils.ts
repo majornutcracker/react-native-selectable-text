@@ -131,7 +131,7 @@ export const htmlContent = (
     try {
       myHighlighter.deserialize('${highlights}');
     } catch (e) {
-      console.error("Failed to restore highlights", e);
+      console.warn("Failed to restore highlights", e);
     }
     document.documentElement.style.webkitUserSelect = 'text';
     document.documentElement.style.webkitTouchCallout = 'none';
@@ -231,7 +231,6 @@ export const htmlContent = (
     }
 
     function sendAction(action, e) {
-      console.log("Action selected:", action);
       if (e) {
         e.preventDefault();
         e.stopPropagation();

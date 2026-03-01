@@ -1,4 +1,5 @@
 import ExpoModulesCore
+import WebKit
 
 public class MajornutcrackerReactNativeSelectableTextModule: Module {
   public func definition() -> ModuleDefinition {
@@ -8,8 +9,8 @@ public class MajornutcrackerReactNativeSelectableTextModule: Module {
       "1.0.0"
     }
 
-    Function("hello") {
-      WKWebView.isMenuEnabledGlobal.toggle()
+    Function("setMenuEnabled") { (enabled: Bool) in
+      WKWebView.isMenuEnabledGlobal(enabled)
     }
   }
 }

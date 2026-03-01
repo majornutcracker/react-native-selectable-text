@@ -21,7 +21,25 @@
     "react-native",
     "expo",
     "@majornutcracker/react-native-selectable-text",
-    "MajornutcrackerReactNativeSelectableText"
+    "MajorNutcracker",
+    "selectable text",
+    "text selection",
+    "custom popup",
+    "rangy",
+    "highlighting",
+    "serialization",
+    "synchronization",
+    "restoration",
+    "native module",
+    "expo module",
+    "react-native-webview",
+    "text selection library",
+    "react-native text selection",
+    "expo text selection",
+    "react-native popup",
+    "web",
+    "ios",
+    "android"
   ],
   "repository": "https://todo.com",
   "bugs": {
@@ -44,14 +62,14 @@
     "lint-staged": "^16.3.0",
     "prettier": "^3.8.1",
     "react-native": "0.82.1",
-    "react-native-webview": "^13.16.1",
+    "react-native-webview": "13.16.0",
     "typescript-eslint": "^8.56.1"
   },
   "peerDependencies": {
     "expo": "*",
     "react": "*",
     "react-native": "*",
-    "react-native-webview": ">=13.16.1"
+    "react-native-webview": ">=13.16.0"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [

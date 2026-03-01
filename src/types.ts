@@ -1,8 +1,6 @@
-import type { WebViewProps } from "react-native-webview";
-
 export type Highlights = string;
 
-export type SelectableTextViewProps = {
+export type SelectableTextViewPropsBase = {
   /**
    * A serialized string that represents the current highlights in the content. This can be used to restore the highlights when the component is re-rendered, for example when the user navigates away from the screen and then comes back.
    * You can obtain this string from onAction callback.
@@ -44,7 +42,7 @@ export type SelectableTextViewProps = {
    * Note that WebView not support navigation to another page, so you have to handle the link clicks yourself in this callback. You can also use this callback to prevent the default behavior of the link clicks, for example by not doing anything when a link is clicked.
    */
   onLink?: (url: string) => void;
-} & WebViewProps;
+};
 
 export type RootBlocks = (ListBlock | HeadingBlock | ParagraphBlock)[];
 

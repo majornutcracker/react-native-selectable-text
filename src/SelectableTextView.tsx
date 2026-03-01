@@ -1,12 +1,15 @@
 import * as React from "react";
-import { WebView } from "react-native-webview";
+import { WebView, WebViewProps } from "react-native-webview";
 
-import { SelectableTextViewProps } from "./types";
+import { SelectableTextViewPropsBase } from "./types";
 import { useRef } from "react";
 import { useCallback } from "react";
 import { htmlContent } from "./utils";
 import { Linking, Platform } from "react-native";
 import { ShouldStartLoadRequest } from "react-native-webview/lib/WebViewTypes";
+
+export type SelectableTextViewProps = SelectableTextViewPropsBase &
+  WebViewProps;
 
 export default function SelectableTextView(props: SelectableTextViewProps) {
   const {
@@ -60,9 +63,9 @@ export default function SelectableTextView(props: SelectableTextViewProps) {
 
   return (
     <WebView
-      ref={webviewRef}
       style={{ flex: 1 }}
       {...webViewProps}
+      ref={webviewRef}
       source={finalSource.current}
       javaScriptEnabled
       domStorageEnabled={false}
