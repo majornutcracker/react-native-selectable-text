@@ -7,5 +7,6 @@
       "@majornutcracker/react-native-selectable-text": ["../src/index"],
       "@majornutcracker/react-native-selectable-text/*": ["../src/*"]
     }
-  }
+  },
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }

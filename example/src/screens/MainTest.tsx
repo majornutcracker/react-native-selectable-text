@@ -2,7 +2,8 @@ import SelectableTextViewModule, {
   RootBlocks,
   SelectableTextView,
 } from "@majornutcracker/react-native-selectable-text";
-import { Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { Button, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const guideContent: RootBlocks = [
@@ -111,7 +112,9 @@ const guideContent: RootBlocks = [
   },
 ];
 
-export default function App() {
+export default function MainTest() {
+  const router = useRouter();
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Module API Example</Text>
@@ -121,6 +124,12 @@ export default function App() {
       <Group name="SelectableTextView" flex>
         <SelectableTextView blocks={guideContent} />
       </Group>
+      <Button
+        title="Go to Home"
+        onPress={() => {
+          router.push("/home");
+        }}
+      />
     </SafeAreaView>
   );
 }
