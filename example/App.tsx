@@ -1,53 +1,137 @@
-import { useEvent } from "expo";
-import MajornutcrackerReactNativeSelectableText, {
-  MajornutcrackerReactNativeSelectableTextView,
+import SelectableTextViewModule, {
+  RootBlocks,
+  SelectableTextView,
 } from "@majornutcracker/react-native-selectable-text";
-import { Button, SafeAreaView, ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+const guideContent: RootBlocks = [
+  // 1. Heading Block
+  {
+    type: "heading",
+    level: 1,
+    children: [
+      {
+        type: "text",
+        text: "Getting Started with SDK",
+        bold: true,
+      },
+    ],
+  },
+
+  // 2. Paragraph Block with Inline Link and Formatting
+  {
+    type: "paragraph",
+    children: [
+      {
+        type: "text",
+        text: "Before you begin, please read our ",
+      },
+      {
+        type: "link",
+        url: "https://docs.example.com/terms",
+        children: [
+          {
+            type: "text",
+            text: "Terms of Service",
+            underline: true,
+            italic: true,
+          },
+        ],
+      },
+      {
+        type: "text",
+        text: ". It is mandatory for all developers.",
+      },
+    ],
+  },
+
+  // 3. List Block (Unordered) showing nested List Items and Code
+  {
+    type: "list",
+    format: "unordered",
+    children: [
+      {
+        type: "list-item",
+        children: [
+          {
+            type: "text",
+            text: "Install the package via ",
+          },
+          {
+            type: "text",
+            text: "npm install @majornutcracker/react-native-selectable-text",
+            code: true,
+          },
+        ],
+      },
+      {
+        type: "list-item",
+        children: [
+          {
+            type: "text",
+            text: "Configure your ",
+          },
+          {
+            type: "text",
+            text: "API_KEY",
+            bold: true,
+          },
+          {
+            type: "text",
+            text: " in the root directory.",
+          },
+        ],
+      },
+    ],
+  },
+
+  // 4. Heading Level 2
+  {
+    type: "heading",
+    level: 2,
+    children: [
+      {
+        type: "text",
+        text: "Legacy Methods",
+        strikethrough: true, // Deprecated section
+      },
+    ],
+  },
+
+  // 5. Action Example (Stand-alone interface)
+  {
+    type: "paragraph",
+    children: [
+      {
+        type: "text",
+        text: "Once finished, click the button below.",
+      },
+    ],
+  },
+];
 
 export default function App() {
-  const onChangePayload = useEvent(
-    MajornutcrackerReactNativeSelectableText,
-    "onChange"
-  );
-
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.container}>
-        <Text style={styles.header}>Module API Example</Text>
-        <Group name="Constants">
-          <Text>{MajornutcrackerReactNativeSelectableText.PI}</Text>
-        </Group>
-        <Group name="Functions">
-          <Text>{MajornutcrackerReactNativeSelectableText.hello()}</Text>
-        </Group>
-        <Group name="Async functions">
-          <Button
-            title="Set value"
-            onPress={async () => {
-              await MajornutcrackerReactNativeSelectableText.setValueAsync(
-                "Hello from JS!"
-              );
-            }}
-          />
-        </Group>
-        <Group name="Events">
-          <Text>{onChangePayload?.value}</Text>
-        </Group>
-        <Group name="Views">
-          <MajornutcrackerReactNativeSelectableTextView
-            url="https://www.example.com"
-            onLoad={({ nativeEvent: { url } }) => console.log(`Loaded: ${url}`)}
-            style={styles.view}
-          />
-        </Group>
-      </ScrollView>
+      <Text style={styles.header}>Module API Example</Text>
+      <Group name="Version">
+        <Text>{SelectableTextViewModule.version}</Text>
+      </Group>
+      <Group name="SelectableTextView" flex>
+        <SelectableTextView blocks={guideContent} />
+      </Group>
     </SafeAreaView>
   );
 }
 
-function Group(props: { name: string; children: React.ReactNode }) {
+function Group(props: {
+  name: string;
+  children: React.ReactNode;
+  flex?: boolean;
+}) {
   return (
-    <View style={styles.group}>
+    <View style={[styles.group, props.flex ? { flex: 1 } : {}]}>
       <Text style={styles.groupHeader}>{props.name}</Text>
       {props.children}
     </View>
