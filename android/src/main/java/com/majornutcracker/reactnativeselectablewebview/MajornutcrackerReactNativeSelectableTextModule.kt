@@ -10,9 +10,5 @@ class MajornutcrackerReactNativeSelectableTextModule : Module() {
     Constant("version") {
       "1.0.0"
     }
-
-    Function("setMenuEnabled") { enabled: Boolean ->
-      // Implementation would go here
-    }
   }
 }

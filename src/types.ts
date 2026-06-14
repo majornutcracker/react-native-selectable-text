@@ -1,48 +1,147 @@
 export type Highlights = string;
 
+export type HTMLString = string;
+
+export type CSSString = string;
+
+export type ColorClassName = string;
+
+export type ColorClass = {
+  /**
+   * A unique className that would be used as CSS classes to apply the selection
+   */
+  name: ColorClassName;
+  color: string;
+};
+
+export type HighlighterOptions = {
+  /**
+   * A boolean to enable the overlap of highlights
+   * @default false
+   */
+  overlapping: boolean;
+  /**
+   * A boolean indicating whether to ignore insignificant whitespace text nodes
+   * (e.g., line breaks or indentation between <p> tags in the HTML).
+   * @default true
+   */
+  ignoreWhiteSpace: boolean;
+  /**
+   * A list of tag or classes to avoid on selection (e.g., 'a', '.no-select' )
+   * If you use custom class names ('.no-select'), you need to add this class in your html content.
+   * @default ['a','sub','sup']
+   */
+  ignoredElements: string[];
+};
+
+export type SelectableTextViewRef = {
+  /**
+   * A function that applies highlighting to the current selection with a colorClassName previously defined in the colorClasses property;
+   * if it is not defined, the highlighting will not be applied.
+   * @param name
+   */
+  highlightSelection: (name?: ColorClassName) => void;
+  /**
+   * A function that removes the highlighting from the current selection
+   */
+  unhighlightSelection: () => void;
+  /**
+   * A promise that returns the selected text
+   */
+  getSelectedText: () => Promise<string>;
+  /**
+   * A promise that returns the serialization of the current highlighting
+   */
+  getHighlights: () => Promise<Highlights>;
+};
+
 export type SelectableTextViewPropsBase = {
   /**
+   * --> Final property
+   * A list of ColorClass containing a unique name, color Hex or strings, The name is used as the className of the tag that wraps the selection,
+   * so in the css property you can add more styles than just the background color. If names are repeated, the last one will be chosen.
+   * @default [{name: yellow-highlighter, color: yellow}]
+   */
+  colorClasses?: ColorClass[];
+  /**
+   * --> State property
    * A serialized string that represents the current highlights in the content. This can be used to restore the highlights when the component is re-rendered, for example when the user navigates away from the screen and then comes back.
-   * You can obtain this string from onAction callback.
+   * You can obtain this string from getHighlights method or onHighlightsChange event.
    * You can also use as a state, the content will be re-rendered with the highlights applied whenever this string changes.
    */
   highlights?: Highlights;
   /**
-   * A function that takes the content blocks and returns an HTML string to be rendered in the WebView. This can be used to customize the rendering of the content, for example by adding custom styles or handling certain block types differently.
-   * This use a default implementation that renders the content blocks as simple HTML, but you can provide your own implementation if you want to customize the rendering.
-   * @param content
-   * @returns html
+   * --> Final property
+   * A html string that will be rendered in the WebView.
+   * You can add class names and reference them in the css property to style the content.
+   * Changing this params no trigger a re-render, you have to remount the component or change the rerender function to trigger a re-render with the new content.
    */
-  rerender?: (content: RootBlocks) => string;
+  content?: HTMLString;
   /**
+   * --> Final property
    * A CSS string that will be injected into the WebView to style the content. This can be used to customize the appearance of the content, for example by changing the font size or color.
    * This use a default implementation that provides some basic styles for the content, but you can provide your own implementation if you want to customize the appearance.
    */
-  css?: string;
+  css?: CSSString;
   /**
-   * A arrays blocks content that will be rendered in the WebView. This is an array of blocks that represent the content to be rendered. The blocks can be of different types, such as text, list, heading, etc. Each block type has its own properties that define how it should be rendered.
+   * --> Final property
+   * A object which represents the available highlighter options
    */
-  blocks?: RootBlocks;
+  highlighterOptions?: HighlighterOptions;
   /**
-   * An array of actions that will be displayed in the context menu when the user selects some text. Each action has a label and a value, and when the user selects an action, the onAction callback will be called with the selected action, the selected text, and the current highlights.
-   * Default actions are "highlight" and "unhighlight", but you can provide your own actions if you want to customize the context menu. You can also provide an empty array if you don't want to show any actions in the context menu.
-   * Action.value === highlight or unhighlight have a special meaning, they will trigger the default highlight and unhighlight behavior when selected.
-   */
-  actions?: Action[];
-  /**
-   * A callback function that will be called when the user selects an action from the context menu. The callback will receive an event object that contains the selected action, the selected text, and the current highlights. You can use this callback to perform any action you want when the user selects an action, for example by showing a modal or navigating to another screen.
-   */
-  onAction?: (event: {
-    action: Action;
-    selection: string;
-    highlights: Highlights;
-  }) => void;
-  /**
-   * A callback function that will be called when the user clicks on a link in the content. The callback will receive the URL of the link that was clicked. You can use this callback to perform any action you want when the user clicks on a link, for example by opening the link in a browser or navigating to another screen.
-   * Note that WebView not support navigation to another page, so you have to handle the link clicks yourself in this callback. You can also use this callback to prevent the default behavior of the link clicks, for example by not doing anything when a link is clicked.
+   * --> State property
+   * A callback function that will be called when the user clicks on a link in the content.
+   * The callback will receive the URL of the link that was clicked.
+   * You can use this callback to perform any action you want when the user clicks on a link,
+   * Note that WebView not support local navigation to another page, so you have to handle the link clicks yourself in this callback.
+   * You can also use this callback to prevent the default behavior of the link clicks, for example by not doing anything when a link is clicked.
+   *  @param url
+   *
    */
   onLink?: (url: string) => void;
+  /**
+   * --> State property
+   * A callback function that will be called when the selected text changes.
+   * The callback will receive the currently selected text as a parameter.
+   * You can use this callback to perform any action you want when the selected text changes.
+   * @param selectedText
+   */
+  onTextSelectionChange?: (selectedText: string) => void;
+  /**
+   * --> State property
+   * A callback function that will be called when the highlights changes.
+   * The callback will receive the currently highlights as a parameter.
+   * You can use this callback to perform any action you want when the highlights changes.
+   * @param selectedText
+   */
+  onHighlightsChange?: (highlights: Highlights) => void;
 };
+
+export type Message = {
+  type: string;
+  value: any;
+};
+
+export const BridgingNames = {
+  // in
+  functions: {
+    updateHighlights: "updateHighlights",
+    highlightSelection: "highlightSelection",
+    unhighlightSelection: "unhighlightSelection",
+  },
+  // out
+  events: {
+    onTextSelectionChange: "onTextSelectionChange",
+    onHighlightsChange: "onHighlightsChange",
+  },
+  // in - out
+  promises: {
+    getSelectedText: "getSelectedText",
+    getHighlights: "getHighlights",
+  },
+};
+
+/*
 
 export type RootBlocks = (ListBlock | HeadingBlock | ParagraphBlock)[];
 
@@ -83,8 +182,4 @@ export interface ParagraphBlock {
   type: "paragraph";
   children: (TextBlock | LinkBlock)[];
 }
-
-export interface Action {
-  label: string;
-  value: string;
-}
+*/

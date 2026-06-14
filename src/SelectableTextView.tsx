@@ -1,42 +1,92 @@
 import * as React from "react";
 import { WebView, WebViewProps } from "react-native-webview";
 
-import { SelectableTextViewPropsBase } from "./types";
-import { useRef } from "react";
-import { useCallback } from "react";
-import { htmlContent } from "./utils";
+import {
+  BridgingNames,
+  Message,
+  SelectableTextViewPropsBase,
+  SelectableTextViewRef,
+  Highlights,
+} from "./types";
+import { generatePromiseId, htmlContent } from "./utils";
 import { Linking, Platform } from "react-native";
 import { ShouldStartLoadRequest } from "react-native-webview/lib/WebViewTypes";
 
-export type SelectableTextViewProps = SelectableTextViewPropsBase &
-  WebViewProps;
+export type SelectableTextViewProps = SelectableTextViewPropsBase & {
+  webViewProps?: WebViewProps;
+};
 
-export default function SelectableTextView(props: SelectableTextViewProps) {
+const SelectableTextView = React.forwardRef<
+  SelectableTextViewRef,
+  SelectableTextViewProps
+>((props, ref) => {
   const {
+    colorClasses,
     highlights,
-    rerender,
+    content,
     css,
-    blocks,
-    actions,
-    onAction,
+    highlighterOptions,
     onLink,
-    ...webViewProps
+    onTextSelectionChange,
+    onHighlightsChange,
+    webViewProps,
   } = props;
-  const webviewRef = useRef<WebView>(null);
+  const promises = React.useRef<{
+    [key: string]: {
+      id: string;
+      resolve: (value: any) => void;
+      reject: (reason?: any) => void;
+    };
+  }>({});
 
-  const finalSource = useRef({
-    html: htmlContent(blocks, rerender, actions, css, Platform.OS, highlights),
+  const webviewRef = React.useRef<WebView>(null);
+
+  const finalSource = React.useRef({
+    html: htmlContent({
+      cC: colorClasses,
+      h: highlights,
+      c: content,
+      css: css,
+      ho: highlighterOptions,
+      p: Platform.OS,
+    }),
   });
 
-  const handleMessage = useCallback(
+  const handleMessage = React.useCallback(
     (event: any) => {
-      const data = JSON.parse(event.nativeEvent.data);
-      onAction?.(data);
+      const data = JSON.parse(event.nativeEvent.data) as Message;
+      if (data.type === BridgingNames.events.onHighlightsChange) {
+        onHighlightsChange?.(data.value as string);
+      } else if (data.type === BridgingNames.events.onTextSelectionChange) {
+        onTextSelectionChange?.(data.value as string);
+      } else if (data.type === BridgingNames.promises.getSelectedText) {
+        const success = data.value.success;
+        const id = data.value.promiseId;
+        const text = data.value.text;
+        if (success) {
+          promises.current[id]?.resolve(text);
+        } else {
+          promises.current[id]?.reject(
+            new Error("Failed to get selected text")
+          );
+        }
+        delete promises.current[id];
+      } else if (data.type === BridgingNames.promises.getHighlights) {
+        const success = data.value.success;
+        const id = data.value.promiseId;
+        const highlights = data.value.highlights;
+        if (success) {
+          promises.current[id]?.resolve(highlights);
+        } else {
+          promises.current[id]?.reject(new Error("Failed to get highlights"));
+        }
+        delete promises.current[id];
+      }
     },
-    [onAction]
+    [onTextSelectionChange, onHighlightsChange]
   );
 
-  const handleShouldStartLoadWithRequest = useCallback(
+  const handleShouldStartLoadWithRequest = React.useCallback(
     (request: ShouldStartLoadRequest) => {
       if (request.url === "about:blank") return true;
 
@@ -57,20 +107,88 @@ export default function SelectableTextView(props: SelectableTextViewProps) {
   );
 
   React.useEffect(() => {
-    const serial = { type: "updateHighlights", value: highlights };
-    webviewRef.current?.postMessage(JSON.stringify(serial));
+    _postMessage({
+      type: BridgingNames.functions.updateHighlights,
+      value: highlights,
+    });
   }, [highlights]);
+
+  const highlightSelection = (colorClassName?: string) => {
+    _postMessage({
+      type: BridgingNames.functions.highlightSelection,
+      value: colorClassName,
+    });
+  };
+
+  const unhighlightSelection = () => {
+    _postMessage({
+      type: BridgingNames.functions.unhighlightSelection,
+      value: undefined,
+    });
+  };
+
+  const getSelectedText = async () => {
+    return new Promise<string>((resolve, reject) => {
+      const id = generatePromiseId();
+      promises.current[id] = {
+        id,
+        resolve,
+        reject,
+      };
+      _postMessage({
+        type: BridgingNames.promises.getSelectedText,
+        value: id,
+      });
+      setTimeout(() => {
+        reject(new Error("Timeout"));
+        delete promises.current[id];
+      }, 1000); // 1 second timeout
+    });
+  };
+
+  const getHighlights = async () => {
+    return new Promise<Highlights>((resolve, reject) => {
+      const id = generatePromiseId();
+      promises.current[id] = {
+        id,
+        resolve,
+        reject,
+      };
+      _postMessage({
+        type: BridgingNames.promises.getHighlights,
+        value: id,
+      });
+      setTimeout(() => {
+        reject(new Error("Timeout"));
+        delete promises.current[id];
+      }, 1000); // 1 second timeout
+    });
+  };
+
+  const _postMessage = (message: Message) => {
+    webviewRef.current?.postMessage(JSON.stringify(message));
+  };
+
+  React.useImperativeHandle(ref, () => ({
+    highlightSelection,
+    unhighlightSelection,
+    getSelectedText,
+    getHighlights,
+  }));
 
   return (
     <WebView
-      style={{ flex: 1 }}
       {...webViewProps}
       ref={webviewRef}
       source={finalSource.current}
-      javaScriptEnabled
       domStorageEnabled={false}
+      javaScriptEnabled
       onMessage={handleMessage}
       onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
     />
   );
-}
+});
+
+SelectableTextView.displayName = "SelectableTextView";
+
+export default SelectableTextView;

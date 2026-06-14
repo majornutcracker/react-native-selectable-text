@@ -7,307 +7,428 @@ import {
   textRange,
 } from "./rangy@1.3.2";
 import {
-  Action,
-  HeadingBlock,
-  LinkBlock,
-  ListBlock,
-  ListItemBlock,
-  ParagraphBlock,
-  RootBlocks,
-  TextBlock,
+  ColorClass,
+  CSSString,
+  HTMLString,
+  HighlighterOptions,
+  Highlights,
 } from "./types";
 
-export const htmlContent = (
-  blocks: RootBlocks | undefined,
-  rerender: ((blocks: RootBlocks) => string) | undefined,
-  actions: Action[] | undefined,
-  cssStyle: string | undefined,
-  platform: string,
-  highlights: string | undefined
-) => {
-  const content = rerender ? rerender(blocks ?? []) : blocksRenderer(blocks);
-  const parsedActions = parseActions(actions);
-  const style = cssStyle ?? blocksStyle;
+export function generatePromiseId(): string {
+  const id =
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15);
+  return id;
+}
+
+function uniqueByName(list: ColorClass[]): ColorClass[] {
+  const map = new Map<string, ColorClass>();
+
+  for (const item of list) {
+    map.set(item.name, item);
+  }
+
+  return Array.from(map.values());
+}
+
+function colorClassesToCSS(list: ColorClass[]): string {
+  return list
+    .map((c) => `.${c.name} { background-color: ${c.color}; }`)
+    .join("\n");
+}
+
+export const htmlContent = ({
+  cC,
+  h,
+  c,
+  css,
+  ho,
+  p,
+}: {
+  cC: ColorClass[] | undefined;
+  h: Highlights | undefined;
+  c: HTMLString | undefined;
+  css: CSSString | undefined;
+  ho: HighlighterOptions | undefined;
+  p: string;
+}) => {
+  const platform = p;
+  const highlights = h;
+  const highlighterOptionsOverlapping = ho?.overlapping ?? false;
+  const highlighterOptions = JSON.stringify({
+    ignoreWhiteSpace: ho?.ignoreWhiteSpace ?? true,
+    ignoredElements: ho?.ignoredElements ?? ["a", "sup", "sub"],
+  });
+  const uniqueCC: ColorClass[] = cC
+    ? uniqueByName([
+        {
+          name: "yellow-highlighter",
+          color: "yellow",
+        },
+        ...cC,
+      ])
+    : [
+        {
+          name: "yellow-highlighter",
+          color: "yellow",
+        },
+      ];
+  const applierNames = JSON.stringify(uniqueCC.map((c) => c.name));
+  const content = c ?? "";
+  const style = css ?? "";
+  const colorClassesStyle = colorClassesToCSS(uniqueCC);
 
   return `
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <style>
-   ${style}
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-    }
-    body {
-      position: relative;
-    }
-    .tools {
-      display: flex;
-      flex-direction: row;
-      position: absolute;
-      opacity: 0;
-      margin: 0;
-      top: 0;
-      left: 0;
-      padding: 4px 6px;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 20px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      z-index: 9999;
-      transition: opacity 0.4s ease;
-    }
-    .tools button {
-      background: none;
-      border: none;
-      margin: 0;
-      padding: 6px 10px;
-      cursor: pointer;
-      font-size: 14px;
-      border-right: 1px solid #ddd;
-      outline: none;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .tools button:last-child {
-      border-right: none;
-    }
-    .tools button:hover {
-      background: transparent;
-    }
-    .tools button:focus,
-    .tools button:active {
-      outline: none;
-      box-shadow: none;
-      background: none;
-    }
-    .noselect {
-      -webkit-user-select: none;
-      user-select: none;
-    }
-    .highlighted-text {
-      background-color: yellow;
-    }
-  </style>
-</head>
-<body>
-  ${content}
-  <div class="tools noselect">
-    ${parsedActions}
-  </div>
-
-  <script>
-    ${core}
-  </script>
-  <script>
-    ${highlighter}
-  </script>
-  <script>
-    ${classApplier}
-  </script>
-  <script>
-    ${saveStore}
-  </script>
-  <script>
-    ${serializer}
-  </script>
-  <script>
-    ${textRange}
-  </script>
-
-  <script>
-    rangy.init();
-    const myHighlighter = rangy.createHighlighter();
-    myHighlighter.addClassApplier(
-      rangy.createClassApplier('highlighted-text', {
-        ignoreWhiteSpace: true,
-        elementTagName: 'span',
-        ignoreSelector: 'a, sup, .noselect'
-      })
-    );
-    try {
-      myHighlighter.deserialize('${highlights}');
-    } catch (e) {
-      console.warn("Failed to restore highlights", e);
-    }
-    document.documentElement.style.webkitUserSelect = 'text';
-    document.documentElement.style.webkitTouchCallout = 'none';
-    let selectedTextCache = '';
-    let selectedRangeCache = [];
-    const isIos = '${platform}' === 'ios';
-    const isAndroid = '${platform}' === 'android';
-    const isWeb = '${platform}' === 'web';
-    const isNative = isAndroid || isIos;
-    if (!window.x) {
-      window.x = {};
-    }
-
-    x.Selector = {};
-    x.Selector.getSelected = function() {
-      let t = '';
-      if (window.getSelection) {
-        t = window.getSelection();
-      } else if (document.getSelection) {
-        t = document.getSelection();
-      } else if (document.selection) {
-        t = document.selection.createRange().text;
+  <head>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <style>
+      ${style}
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
       }
-      return t;
-    };
+      body {
+        position: relative;
+      }
+      .tools {
+        display: flex;
+        flex-direction: row;
+        position: absolute;
+        opacity: 0;
+        margin: 0;
+        top: 0;
+        left: 0;
+        padding: 4px 6px;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        z-index: 9999;
+        transition: opacity 0.4s ease;
+      }
+      .tools button {
+        background: none;
+        border: none;
+        margin: 0;
+        padding: 6px 10px;
+        cursor: pointer;
+        font-size: 14px;
+        border-right: 1px solid #ddd;
+        outline: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .tools button:last-child {
+        border-right: none;
+      }
+      .tools button:hover {
+        background: transparent;
+      }
+      .tools button:focus,
+      .tools button:active {
+        outline: none;
+        box-shadow: none;
+        background: none;
+      }
+      .no-select {
+        -webkit-user-select: none;
+        user-select: none;
+      }
+      ${colorClassesStyle}
+    </style>
+  </head>
+  <body>
+    ${content}
+    <script>
+      ${core}
+    </script>
+    <script>
+      ${highlighter}
+    </script>
+    <script>
+      ${classApplier}
+    </script>
+    <script>
+      ${saveStore}
+    </script>
+    <script>
+      ${serializer}
+    </script>
+    <script>
+      ${textRange}
+    </script>
 
-    if (isAndroid) {
-      document.addEventListener("message", function(event) {
+    <script>
+      const Platform = {
+        ios: "ios",
+        android: "android",
+        web: "web",
+      };
+
+      document.documentElement.style.webkitUserSelect = "text";
+      document.documentElement.style.webkitTouchCallout = "none";
+
+      rangy.init();
+
+      if (!window.__MNST__) {
+        window.__MNST__ = {
+          // constants
+          platform: {
+            platform: "${platform}",
+            isIos: "${platform}" === Platform.ios,
+            isAndroid: "${platform}" === Platform.android,
+            isWeb: "${platform}" === Platform.web,
+            isNative:
+              "${platform}" === Platform.ios || "${platform}" === Platform.android,
+          },
+          // selection
+          selector: {
+            cache: {
+              text: "",
+              range: null,
+            },
+            getSelected: function () {
+              let t;
+              if (window.getSelection) {
+                t = window.getSelection();
+              } else if (document.getSelection) {
+                t = document.getSelection();
+              } else if (document.selection) {
+                t = document.selection.createRange().text;
+              }
+              return t;
+            },
+          },
+          // rangy
+          highlighter: rangy.createHighlighter(),
+          // extra
+          overlapping: ${highlighterOptionsOverlapping}
+        };
+      }
+
+      // Bootstrap
+      if (!window.__MNST__init) {
+        window.__MNST__init = true;
+
         try {
-          const data = JSON.parse(event.data);
-          if (data.type === "updateHighlights") {
-            myHighlighter.removeAllHighlights();
-            myHighlighter.deserialize(data.value);
-          }
+          const applierNames = ${applierNames};
+          const highlighterOptions = ${highlighterOptions};
+          applierNames.forEach((name) => {
+            __MNST__.highlighter.addClassApplier(
+              rangy.createClassApplier(name, {
+                ignoreWhiteSpace: highlighterOptions.ignoreWhiteSpace ?? true,
+                elementTagName: "span",
+                ignoreSelector: highlighterOptions.ignoredElements
+                  ? highlighterOptions.ignoredElements.map((s) => s.trim()).join(", ")
+                  : "",
+              })
+            );
+          });
         } catch (e) {
-          console.error("Error parsing", e);
+          console.error("Failed to update class appliers: ", e);
         }
-      });
-    } else {
-      window.addEventListener("message", function(event) {
-        try {
-          const data = JSON.parse(event.data);
-          if (data.type === "updateHighlights") {
+
+        updateHighlights(${JSON.stringify(highlights ?? "")});
+
+        if (__MNST__.platform.isAndroid) {
+          document.addEventListener("message", function (event) {
             try {
-              myHighlighter.removeAllHighlights();
-              myHighlighter.deserialize(data.value);
+              const data = JSON.parse(event.data);
+              onMessage(data.type, data.value);
             } catch (e) {
-              console.error("Failed to restore highlights", e);
+              console.error("Error parsing message: ", e);
             }
+          });
+        } else {
+          window.addEventListener("message", function (event) {
+            try {
+              const data = JSON.parse(event.data);
+              onMessage(data.type, data.value);
+            } catch (e) {
+              console.error("Error parsing message: ", e);
+            }
+          });
+        }
+        document.addEventListener("selectionchange", function (e) {
+          e.preventDefault();
+          const selection = __MNST__.selector.getSelected();
+          if (!selection || selection.toString().trim() === "") {
+            __MNST__.selector.cache.text = "";
+            __MNST__.selector.cache.range = null;
+            sendOnTextSelectionChange("");
+          } else {
+            __MNST__.selector.cache.text = selection.toString();
+            if (selection.rangeCount > 0) {
+              __MNST__.selector.cache.range = selection.getRangeAt(0).cloneRange();
+            }
+            sendOnTextSelectionChange(__MNST__.selector.cache.text);
+          }
+        });
+      }
+
+      // <------------------------------ Bridging ----------------------------------->
+      const BridgingNames = {
+        // in
+        functions: {
+          updateHighlights: "updateHighlights",
+          highlightSelection: "highlightSelection",
+          unhighlightSelection: "unhighlightSelection",
+        },
+        // out
+        events: {
+          onTextSelectionChange: "onTextSelectionChange",
+          onHighlightsChange: "onHighlightsChange",
+        },
+        // in - out
+        promises: {
+          getSelectedText: "getSelectedText",
+          getHighlights: "getHighlights",
+        },
+      };
+
+      // @native-receiver
+      function onMessage(type, value) {
+        if (type === BridgingNames.functions.updateHighlights) {
+          updateHighlights(value); // highlights
+        } else if (type === BridgingNames.functions.highlightSelection) {
+          highlightSelection(value ?? "yellow-highlighter"); // classApplierName
+        } else if (type === BridgingNames.functions.unhighlightSelection) {
+          unhighlightSelection();
+        } else if (type === BridgingNames.promises.getSelectedText) {
+          getSelectedText(value); // promiseId
+        } else if (type === BridgingNames.promises.getHighlights) {
+          getHighlights(value); // promiseId
+        }
+      }
+
+      // @native-sender
+      function postMessage(type, value) {
+        const message = JSON.stringify({ type, value });
+        if (__MNST__.platform.isNative && window.ReactNativeWebView) {
+          window.ReactNativeWebView.postMessage(message);
+        } else if (__MNST__.platform.isWeb && window.parent) {
+          window.parent.postMessage(message, "*");
+        }
+      }
+
+      // @native-event
+      function sendOnTextSelectionChange(text) {
+        postMessage(BridgingNames.events.onTextSelectionChange, text);
+      }
+
+      // @native-event
+      function sendOnHighlightChange(highlights) {
+        postMessage(BridgingNames.events.onHighlightsChange, highlights);
+      }
+
+      // @native-promise-resolve
+      function sendGetSelectedText(promiseId, success, text) {
+        postMessage(BridgingNames.promises.getSelectedText, {
+          promiseId,
+          success,
+          text,
+        });
+      }
+
+      // @native-promise-resolve
+      function sendGetHighlights(promiseId, success, highlights) {
+        postMessage(BridgingNames.promises.getHighlights, {
+          promiseId,
+          success,
+          highlights,
+        });
+      }
+
+      // <------------------------ Internal functions ------------------------------->
+
+      // @sdk-internal-with-event
+      function updateHighlights(highlights) {
+        try {
+          __MNST__.highlighter.removeAllHighlights();
+          __MNST__.highlighter.deserialize(highlights);
+          sendOnHighlightChange(__MNST__.highlighter.serialize());
+        } catch (e) {
+          console.error("Failed to restore highlights: ", e);
+        }
+      }
+
+      // @sdk-internal-with-event
+      function highlightSelection(classApplierName) {
+        try {
+          const sel = document.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(__MNST__.selector.cache.range);
+          const rangySel = rangy.getSelection();
+          if (!rangySel.isCollapsed) {
+            __MNST__.highlighter.highlightSelection(classApplierName, {
+              exclusive:
+                typeof __MNST__.overlapping === "boolean"
+                  ? !__MNST__.overlapping
+                  : true,
+            });
+            sendOnHighlightChange(__MNST__.highlighter.serialize());
           }
         } catch (e) {
-          console.error("Error parsing message:", e);
+          console.error("Failed to highlight selection", e);
         }
-      });
-    }
-
-    function hideMenu() {
-      selectedTextCache = '';
-      const toolsMenu = document.querySelector(".tools");
-      toolsMenu.style.opacity = 0;
-      toolsMenu.style.pointerEvents = 'none';
-    }
-
-    function showMenuAboveSelection() {
-      const selection = x.Selector.getSelected();
-      const toolsMenu = document.querySelector(".tools");
-
-      if (!selection || selection.toString().trim() === "") {
-        hideMenu();
-        return;
       }
 
-      const range = selection.getRangeAt(0);
-      const rect = range.getBoundingClientRect();
-      const menuWidth = toolsMenu.offsetWidth;
-      const menuHeight = toolsMenu.offsetHeight;
-
-      let left = ((rect.left + rect.right) / 2) - (menuWidth / 2) + window.scrollX;
-      let top = rect.top + window.scrollY - menuHeight - (isIos? 55 : 40);
-
-      if (left < 0) left = 0;
-      if (left + menuWidth > window.innerWidth) {
-        left = window.innerWidth - menuWidth;
-      }
-
-      if (top < 0) {
-        top = rect.bottom;
-      }
-      if (top + menuHeight > window.innerHeight) {
-        top = window.innerHeight - menuHeight;
-      }
-
-      toolsMenu.style.left = left + "px";
-      toolsMenu.style.top = top + "px";
-      toolsMenu.style.opacity = 1;
-      toolsMenu.style.pointerEvents = 'auto';
-    }
-
-    function sendAction(action, e) {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      if (!selectedTextCache) return;
-
-      if ((action.value === 'highlight' || action.value === 'unhighlight')  && selectedRangeCache) {
-        const sel = document.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(selectedRangeCache);
-        if (action.value === 'highlight') {
-          highlightSelection();
-        } else if (action.value === 'unhighlight') {
-          const sel = rangy.getSelection();
-          if (!sel.isCollapsed) {
-            myHighlighter.unhighlightSelection();
+      // @sdk-internal-with-event
+      function unhighlightSelection() {
+        try {
+          const sel = document.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(__MNST__.selector.cache.range);
+          const rangySel = rangy.getSelection();
+          if (!rangySel.isCollapsed) {
+            __MNST__.highlighter.unhighlightSelection();
+            sendOnHighlightChange(__MNST__.highlighter.serialize());
           }
+        } catch (e) {
+          console.error("Failed to unhighlight selection: ", e);
         }
       }
-      if ( isNative && window.ReactNativeWebView) {
-        if (action.value === 'highlight' || action.value === 'unhighlight') {
-          window.ReactNativeWebView.postMessage(JSON.stringify({ action, selection: selectedTextCache, highlights: myHighlighter.serialize() }));
-        } else {
-          window.ReactNativeWebView.postMessage(JSON.stringify({ action, selection: selectedTextCache, highlights: myHighlighter.serialize() }));
+
+      // @sdk-internal-with-resolve
+      function getSelectedText(id) {
+        try {
+          if (!__MNST__.selector.cache.text) {
+            sendGetSelectedText(id, true, "");
+            return;
+          } else {
+            sendGetSelectedText(id, true, __MNST__.selector.cache.text);
+          }
+        } catch (e) {
+          console.error("Failed to get selected text: ", e);
+          sendGetSelectedText(id, false, undefined);
         }
       }
-      else if ( isWeb && window.parent ) {
-        if (action.value === 'highlight' || action.value === 'unhighlight') {
-          window.parent.postMessage(
-            JSON.stringify({ action, selection: selectedTextCache, highlights: myHighlighter.serialize() }),
-            "*"
-          );
-        } else {
-          window.parent.postMessage(
-            JSON.stringify({ action, selection: selectedTextCache, highlights: myHighlighter.serialize() }),
-            "*"
-          );
+
+      // @sdk-internal-with-resolve
+      function getHighlights(id) {
+        try {
+          sendGetHighlights(id, true, __MNST__.highlighter.serialize());
+        } catch (e) {
+          console.error("Failed to get highlights: ", e);
+          sendGetHighlights(id, false, undefined);
         }
       }
-      hideMenu();
-    }
 
-    document.addEventListener("contextmenu", function(e) {
-      e.preventDefault();
-      showMenuAboveSelection();
-    });
-
-    document.addEventListener("selectionchange", function(e) {
-      e.preventDefault();
-      const selection = x.Selector.getSelected();
-      if (!selection || selection.toString().trim() === "") {
-        selectedTextCache = '';
-        selectedRangeCache = null;
-        hideMenu();
-        return;
-      }
-      selectedTextCache = selection.toString();
-      if (selection.rangeCount > 0) {
-        selectedRangeCache = selection.getRangeAt(0).cloneRange();
-      }
-      showMenuAboveSelection();
-    });
-
-    function highlightSelection() {
-      const sel = rangy.getSelection();
-      if (!sel.isCollapsed) {
-        myHighlighter.highlightSelection('highlighted-text');
-      }
-    }
-
-    true;
-  </script>
-</body>
+      true;
+    </script>
+  </body>
 </html>
 `;
 };
 
+/*
 function parseActions(actions: Action[] | undefined): string {
   let html = "";
   if (!actions) {
@@ -319,15 +440,15 @@ function parseActions(actions: Action[] | undefined): string {
     );
   } else {
     actions.forEach((a) => {
-      html = html.concat(
-        `<button onclick="sendAction({ value : '${a.value}', label : '${a.label}' }, event)">${a.label}</button>`
-      );
-    });
-  }
-  return html;
+  html = html.concat(
+    `<button onclick="sendAction({ value : '${a.value}', label : '${a.label}' }, event)">${a.label}</button>`
+  );
+});
+}
+return html;
 }
 
-function blocksRenderer(content: RootBlocks | undefined): string {
+export function blocksRenderer(content: RootBlocks | undefined): string {
   return `
     <div class="content">
       ${content?.map((block, index) => blockRenderer(block, index)).join("")}
@@ -390,7 +511,6 @@ function inlineRenderer(block: TextBlock | LinkBlock, index: number): string {
   }
 
   if (block.type === "link") {
-    const isNote = block.url.startsWith("note://");
     const isLink =
       block.url.startsWith("https://") || block.url.startsWith("http://");
     const childrenHTML = block.children
@@ -399,9 +519,6 @@ function inlineRenderer(block: TextBlock | LinkBlock, index: number): string {
 
     if (isLink) {
       return `<a href="${block.url}" data-key="${index}">${childrenHTML}</a>`;
-    } else if (isNote) {
-      const noteId = block.url.replace("note://", "");
-      return `<sup class="noselect" id="note-ref-${noteId}" data-key="${index}"><a href="${block.url}">${childrenHTML}</a></sup>`;
     } else {
       return "";
     }
@@ -420,53 +537,53 @@ function escapeHtml(text: string): string {
 }
 
 export const blocksStyle = `
-  .content {
-    font-family: system-ui, sans-serif;
-    line-height: 1.6;
-    font-size: 16px;
-    color: #000000ff;
-  }
+.content {
+  font-family: system-ui, sans-serif;
+  line-height: 1.6;
+  font-size: 16px;
+  color: #000000ff;
+}
 
-  .content p {
-    margin: 0.75em 0;
-  }
+.content p {
+  margin: 0.75em 0;
+}
 
-  .content h1, .content h2, .content h3,
-  .content h4, .content h5, .content h6 {
-    margin: 1.2em 0 0.6em;
-    font-weight: bold;
-  }
+.content h1,
+.content h2,
+.content h3,
+.content h4,
+.content h5,
+.content h6 {
+  margin: 1.2em 0 0.6em;
+  font-weight: bold;
+}
 
-  .content ul,
-  .content ol {
-    margin: 1em 2.5em 1em 2.5em;
-    padding: 0;
-  }
+.content ul,
+.content ol {
+  margin: 1em 2.5em 1em 2.5em;
+  padding: 0;
+}
 
-  .content li {
-    margin: 2em 0;
-  }
+.content li {
+  margin: 2em 0;
+}
 
-  .content a {
-    color: #0645ad;
-    text-decoration: underline;
-  }
+.content a {
+  color: #0645ad;
+  text-decoration: underline;
+}
 
-  .content code {
-    font-family: monospace;
-    background: #f4f4f4;
-    padding: 0.2em 0.4em;
-    border-radius: 4px;
-    font-size: 0.95em;
-  }
+.content code {
+  font-family: monospace;
+  background: #f4f4f4;
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-size: 0.95em;
+}
 
-  .content sup {
-    font-size: 0.75em;
-    line-height: 0;
-  }
-
-  .noselect {
-    -webkit-user-select: none;
-    user-select: none;
-  }
+.content sup {
+  font-size: 0.75em;
+  line-height: 0;
+}
 `;
+*/

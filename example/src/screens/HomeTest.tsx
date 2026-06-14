@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { Button, Text, View } from "react-native";
+import { Button, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeTest() {
@@ -37,7 +37,7 @@ function Group(props: {
   );
 }
 
-const styles = {
+const styles = StyleSheet.create({
   header: {
     fontSize: 30,
     margin: 20,
@@ -56,4 +56,4 @@ const styles = {
     flex: 1,
     backgroundColor: "#eee",
   },
-};
+});

@@ -1,35 +1,54 @@
 import * as React from "react";
 import { useEffect, useRef } from "react";
 
-import { SelectableTextViewPropsBase } from "./types";
+import {
+  BridgingNames,
+  SelectableTextViewPropsBase,
+  SelectableTextViewRef,
+} from "./types";
 import { htmlContent } from "./utils";
 import { Linking } from "react-native";
 
-export type SelectableTextViewProps = SelectableTextViewPropsBase &
-  React.IframeHTMLAttributes<HTMLIFrameElement>;
+export type SelectableTextViewProps = SelectableTextViewPropsBase & {
+  webViewProps?: React.IframeHTMLAttributes<HTMLIFrameElement>;
+};
 
-export default function SelectableTextView(props: SelectableTextViewProps) {
+const SelectableTextView = React.forwardRef<
+  SelectableTextViewRef,
+  SelectableTextViewProps
+>((props, ref) => {
   const {
+    colorClasses,
     highlights,
-    rerender,
+    content,
     css,
-    blocks,
-    actions,
-    onAction,
+    highlighterOptions,
     onLink,
-    srcDoc,
-    ...webViewProps
+    onTextSelectionChange,
+    onHighlightsChange,
+    webViewProps,
   } = props;
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const finalSource = useRef(
-    htmlContent(blocks, rerender, actions, css, "web", highlights)
-  );
+  const finalSource = useRef({
+    html: htmlContent({
+      cC: colorClasses,
+      h: highlights,
+      c: content,
+      css: css,
+      ho: highlighterOptions,
+      p: "web",
+    }),
+  });
 
   useEffect(() => {
     const handler = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
-        onAction?.(data);
+        if (data.type === BridgingNames.events.onHighlightsChange) {
+          onHighlightsChange?.(data.value as string);
+        } else if (data.type === BridgingNames.events.onTextSelectionChange) {
+          onTextSelectionChange?.(data.value as string);
+        }
       } catch (err) {
         console.warn("Failed to parse message from iframe:", err);
       }
@@ -38,7 +57,7 @@ export default function SelectableTextView(props: SelectableTextViewProps) {
     return () => {
       window.removeEventListener("message", handler);
     };
-  }, [onAction]);
+  }, [onHighlightsChange, onTextSelectionChange]);
 
   useEffect(() => {
     const iframe = iframeRef.current;
@@ -71,20 +90,45 @@ export default function SelectableTextView(props: SelectableTextViewProps) {
     iframeRef.current?.contentWindow?.postMessage(JSON.stringify(serial), "*");
   }, [highlights]);
 
+  const highlightSelection = (colorClassName?: string) => {
+    iframeRef.current?.contentWindow?.postMessage(
+      JSON.stringify({ type: "highlightSelection", value: colorClassName }),
+      "*"
+    );
+  };
+
+  const unhighlightSelection = () => {
+    iframeRef.current?.contentWindow?.postMessage(
+      JSON.stringify({ type: "unhighlightSelection" }),
+      "*"
+    );
+  };
+
+  const getSelectedText = async () => {
+    return "";
+  };
+
+  const getHighlights = async () => {
+    return "";
+  };
+
+  React.useImperativeHandle(ref, () => ({
+    highlightSelection,
+    unhighlightSelection,
+    getSelectedText,
+    getHighlights,
+  }));
+
   return (
     <iframe
       ref={iframeRef}
-      style={{
-        flex: 1,
-        width: "100%",
-        height: "100%",
-        border: "none",
-        padding: 0,
-        margin: 0,
-      }}
-      sandbox="allow-scripts"
       {...webViewProps}
-      srcDoc={finalSource.current}
+      sandbox="allow-scripts"
+      srcDoc={finalSource.current.html}
     />
   );
-}
+});
+
+SelectableTextView.displayName = "SelectableTextView";
+
+export default SelectableTextView;
