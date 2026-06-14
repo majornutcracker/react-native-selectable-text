@@ -47,10 +47,14 @@ export type SelectableTextViewRef = {
   unhighlightSelection: () => void;
   /**
    * A promise that returns the selected text
+   * @throws
+   * @returns The selected text
    */
   getSelectedText: () => Promise<string>;
   /**
    * A promise that returns the serialization of the current highlighting
+   * @throws
+   * @returns The serialization of the current highlighting
    */
   getHighlights: () => Promise<Highlights>;
 };

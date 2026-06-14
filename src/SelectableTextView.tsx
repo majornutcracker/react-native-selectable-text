@@ -33,7 +33,6 @@ const SelectableTextView = React.forwardRef<
   } = props;
   const promises = React.useRef<{
     [key: string]: {
-      id: string;
       resolve: (value: any) => void;
       reject: (reason?: any) => void;
     };
@@ -63,11 +62,12 @@ const SelectableTextView = React.forwardRef<
         const success = data.value.success;
         const id = data.value.promiseId;
         const text = data.value.text;
+        const error = data.value.error;
         if (success) {
-          promises.current[id]?.resolve(text);
+          promises.current[id]?.resolve(text ?? "");
         } else {
           promises.current[id]?.reject(
-            new Error("Failed to get selected text")
+            new Error(error ?? "Unknown error while getting selected text")
           );
         }
         delete promises.current[id];
@@ -75,10 +75,13 @@ const SelectableTextView = React.forwardRef<
         const success = data.value.success;
         const id = data.value.promiseId;
         const highlights = data.value.highlights;
+        const error = data.value.error;
         if (success) {
-          promises.current[id]?.resolve(highlights);
+          promises.current[id]?.resolve(highlights ?? "");
         } else {
-          promises.current[id]?.reject(new Error("Failed to get highlights"));
+          promises.current[id]?.reject(
+            new Error(error ?? "Unknown error while getting highlights")
+          );
         }
         delete promises.current[id];
       }
@@ -113,6 +116,15 @@ const SelectableTextView = React.forwardRef<
     });
   }, [highlights]);
 
+  React.useEffect(() => {
+    return () => {
+      for (const key in promises.current) {
+        promises.current[key]?.reject(new Error("Component unmounted"));
+        delete promises.current[key];
+      }
+    };
+  }, []);
+
   const highlightSelection = (colorClassName?: string) => {
     _postMessage({
       type: BridgingNames.functions.highlightSelection,
@@ -131,7 +143,6 @@ const SelectableTextView = React.forwardRef<
     return new Promise<string>((resolve, reject) => {
       const id = generatePromiseId();
       promises.current[id] = {
-        id,
         resolve,
         reject,
       };
@@ -140,9 +151,11 @@ const SelectableTextView = React.forwardRef<
         value: id,
       });
       setTimeout(() => {
-        reject(new Error("Timeout"));
-        delete promises.current[id];
-      }, 1000); // 1 second timeout
+        if (promises.current[id]) {
+          promises.current[id]?.reject(new Error("Timeout"));
+          delete promises.current[id];
+        }
+      }, 2000); // 2 second timeout
     });
   };
 
@@ -150,7 +163,6 @@ const SelectableTextView = React.forwardRef<
     return new Promise<Highlights>((resolve, reject) => {
       const id = generatePromiseId();
       promises.current[id] = {
-        id,
         resolve,
         reject,
       };
@@ -159,9 +171,11 @@ const SelectableTextView = React.forwardRef<
         value: id,
       });
       setTimeout(() => {
-        reject(new Error("Timeout"));
-        delete promises.current[id];
-      }, 1000); // 1 second timeout
+        if (promises.current[id]) {
+          promises.current[id]?.reject(new Error("Timeout"));
+          delete promises.current[id];
+        }
+      }, 2000); // 2 second timeout
     });
   };
 

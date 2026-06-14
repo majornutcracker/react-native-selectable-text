@@ -3,6 +3,8 @@ import SelectableTextViewModule, {
   HTMLString,
   SelectableTextViewRef,
   ColorClass,
+  CSSString,
+  ColorClassName,
 } from "@majornutcracker/react-native-selectable-text";
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
@@ -18,16 +20,18 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const guideContent: HTMLString = `
-<article>
+<article class="content">
   <header>
     <h1>@majornutcracker/react-native-selectable-text</h1>
     <p>
       This screen exercises the SelectableTextView example: HTML inside a WebView,
       native text selection, and optional highlights you can apply from the system menu.
+      Demo build <sup>v1.0</sup>.
     </p>
     <p>
       The library is a MajorNutcracker add-on for React Native. It targets apps that need
       richer selection than a plain Text component, without giving up a familiar document layout.
+      See note<sub>1</sub> for ignored elements during highlighting.
     </p>
   </header>
   <main>
@@ -36,7 +40,7 @@ const guideContent: HTMLString = `
       <p>
         Content is rendered as HTML in react-native-webview. Rangy runs in the page to manage
         highlight spans and serialization, so highlights can be saved, restored, and kept in sync
-        when your screen state changes.
+        when your screen state changes. Example: H<sub>2</sub>O and E = mc<sup>2</sup>.
       </p>
       <p>
         A thin native bridge (Swift on iOS, Kotlin on Android) carries messages between the WebView
@@ -50,8 +54,8 @@ const guideContent: HTMLString = `
         The sample logs highlight payloads through onHighlightsChange so you can see the serialized state.
       </p>
       <ul>
-        <li>Short list item for nested selection.</li>
-        <li>Another line to drag a multi-line selection across.</li>
+        <li>Short list item for nested selection with x<sup>2</sup> notation.</li>
+        <li>Another line with CO<sub>2</sub> to drag a multi-line selection across.</li>
       </ul>
     </section>
     <section aria-labelledby="s3">
@@ -60,6 +64,7 @@ const guideContent: HTMLString = `
         The package ships as an Expo module, so it fits Expo Router projects and bare workflows
         that already use autolinking. You pass HTML, optional CSS, color classes, and initial highlights;
         the ref exposes imperative helpers for highlight and unhighlight when you wire custom UI.
+        API ref<sup>3</sup> covers <code>highlightSelection</code> and <code>unhighlightSelection</code>.
       </p>
     </section>
   </main>
@@ -70,9 +75,17 @@ const guideContent: HTMLString = `
     </p>
   </aside>
   <footer>
-    <p>Demo content for local development only.</p>
+    <p>Demo content for local development only. <sub>1</sub> Default ignored elements: a, sup, sub.</p>
   </footer>
 </article>
+`;
+
+const cssContent: CSSString = `
+.content {
+  font-family: system-ui, sans-serif;
+  line-height: 1.6;
+  font-size: 14px;
+}
 `;
 
 const colorClasses: ColorClass[] = [
@@ -83,34 +96,31 @@ const colorClasses: ColorClass[] = [
 export default function MainTest() {
   const router = useRouter();
   const selectableTextViewRef = useRef<SelectableTextViewRef>(null);
-  const [currentColorClass, setCurrentColorClass] = useState<ColorClass>(
-    colorClasses[0]
-  );
+  const [currentColorClassName, setCurrentColorClassName] =
+    useState<ColorClassName>(colorClasses[0].name);
 
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Module API Example</Text>
-      <Group name="Version">
-        <Text>{SelectableTextViewModule.version}</Text>
-      </Group>
-
       <Group name="Actions">
-        <Button
-          title="Get Highlights"
-          onPress={async () => {
-            const highlights =
-              await selectableTextViewRef.current?.getHighlights();
-            Alert.alert("Highlights", JSON.stringify(highlights));
-          }}
-        />
-        <Button
-          title="Get Selected Text"
-          onPress={async () => {
-            const selectedText =
-              await selectableTextViewRef.current?.getSelectedText();
-            Alert.alert("Selected Text", JSON.stringify(selectedText));
-          }}
-        />
+        <View style={styles.actionsContainer}>
+          <Button
+            title="Get Highlights"
+            onPress={async () => {
+              const highlights =
+                await selectableTextViewRef.current?.getHighlights();
+              Alert.alert("Highlights", JSON.stringify(highlights));
+            }}
+          />
+          <Button
+            title="Get Selected Text"
+            onPress={async () => {
+              const selectedText =
+                await selectableTextViewRef.current?.getSelectedText();
+              Alert.alert("Selected Text", JSON.stringify(selectedText));
+            }}
+          />
+        </View>
       </Group>
       <Group name="SelectableTextView" flex>
         <SelectableTextView
@@ -131,7 +141,7 @@ export default function MainTest() {
               const key = event.nativeEvent.key;
               if (key === "highlight") {
                 selectableTextViewRef.current?.highlightSelection(
-                  currentColorClass.name
+                  currentColorClassName
                 );
               } else if (key === "unhighlight") {
                 selectableTextViewRef.current?.unhighlightSelection();
@@ -140,7 +150,7 @@ export default function MainTest() {
           }}
           colorClasses={colorClasses}
           content={guideContent}
-          css={""}
+          css={cssContent}
           highlighterOptions={{
             overlapping: false,
             ignoreWhiteSpace: true,
@@ -160,8 +170,8 @@ export default function MainTest() {
       </Group>
       <Fab
         colorClasses={colorClasses}
-        currentColorClass={currentColorClass}
-        setCurrentColorClass={setCurrentColorClass}
+        currentColorClassName={currentColorClassName}
+        setCurrentColorClassName={setCurrentColorClassName}
       />
       <Button
         title="Go to Home"
@@ -188,17 +198,17 @@ function Group(props: {
 
 function Fab(props: {
   colorClasses: ColorClass[];
-  currentColorClass: ColorClass;
-  setCurrentColorClass: (colorClass: ColorClass) => void;
+  currentColorClassName: ColorClassName;
+  setCurrentColorClassName: (colorClassName: ColorClassName) => void;
 }) {
   return (
     <View style={styles.colorClassesContainer}>
       {props.colorClasses.map((colorClass) => {
-        const isCurrent = colorClass.name === props.currentColorClass.name;
+        const isCurrent = colorClass.name === props.currentColorClassName;
         return (
           <TouchableOpacity
             key={colorClass.name}
-            onPress={() => props.setCurrentColorClass(colorClass)}
+            onPress={() => props.setCurrentColorClassName(colorClass.name)}
             style={[styles.fabButton, isCurrent ? styles.fabButtonCurrent : {}]}
           >
             <View
@@ -254,5 +264,10 @@ const styles = StyleSheet.create({
   fabButtonCurrent: {
     borderWidth: 2,
     borderColor: "black",
+  },
+  actionsContainer: {
+    flexDirection: "row",
+    gap: 10,
+    justifyContent: "center",
   },
 });

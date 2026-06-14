@@ -329,20 +329,22 @@ export const htmlContent = ({
       }
 
       // @native-promise-resolve
-      function sendGetSelectedText(promiseId, success, text) {
+      function sendGetSelectedText(promiseId, success, text, error) {
         postMessage(BridgingNames.promises.getSelectedText, {
           promiseId,
           success,
           text,
+          error,
         });
       }
 
       // @native-promise-resolve
-      function sendGetHighlights(promiseId, success, highlights) {
+      function sendGetHighlights(promiseId, success, highlights, error) {
         postMessage(BridgingNames.promises.getHighlights, {
           promiseId,
           success,
           highlights,
+          error,
         });
       }
 
@@ -400,24 +402,24 @@ export const htmlContent = ({
       function getSelectedText(id) {
         try {
           if (!__MNST__.selector.cache.text) {
-            sendGetSelectedText(id, true, "");
+            sendGetSelectedText(id, true, "", undefined);
             return;
           } else {
-            sendGetSelectedText(id, true, __MNST__.selector.cache.text);
+            sendGetSelectedText(id, true, __MNST__.selector.cache.text, undefined);
           }
         } catch (e) {
           console.error("Failed to get selected text: ", e);
-          sendGetSelectedText(id, false, undefined);
+          sendGetSelectedText(id, false, undefined, e.message);
         }
       }
 
       // @sdk-internal-with-resolve
       function getHighlights(id) {
         try {
-          sendGetHighlights(id, true, __MNST__.highlighter.serialize());
+          sendGetHighlights(id, true, __MNST__.highlighter.serialize(), undefined);
         } catch (e) {
           console.error("Failed to get highlights: ", e);
-          sendGetHighlights(id, false, undefined);
+          sendGetHighlights(id, false, undefined, e.message);
         }
       }
 
