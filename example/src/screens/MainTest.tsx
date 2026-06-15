@@ -7,10 +7,11 @@ import {
   ColorClassName,
 } from "@majornutcracker/react-native-selectable-text";
 import { useRef, useState } from "react";
-import { Linking, StyleSheet, Text, View } from "react-native";
+import { Linking, StyleSheet, Text, View, Platform, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ActionsFab } from "@/components/ActionsFab";
 import { ColorFab } from "@/components/ColorFab";
+import Clipboard from "@react-native-clipboard/clipboard";
 
 const guideContent: HTMLString = `
 <article class="content">
@@ -181,6 +182,10 @@ export default function MainTest() {
                 key: "unhighlight",
                 label: "Unhighlight",
               },
+              {
+                key: "copy",
+                label: "Copy",
+              },
             ],
             onCustomMenuSelection: (event) => {
               const key = event.nativeEvent.key;
@@ -190,6 +195,11 @@ export default function MainTest() {
                 );
               } else if (key === "unhighlight") {
                 selectableTextViewRef.current?.unhighlightSelection();
+              } else if (key === "copy") {
+                Clipboard.setString(event.nativeEvent.selectedText);
+                Platform.OS === "ios"
+                  ? Alert.alert("Copied to clipboard")
+                  : null;
               }
             },
           }}
