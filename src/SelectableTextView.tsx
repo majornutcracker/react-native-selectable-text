@@ -139,6 +139,13 @@ const SelectableTextView = React.forwardRef<
     });
   };
 
+  const clearHighlights = () => {
+    _postMessage({
+      type: BridgingNames.functions.clearHighlights,
+      value: undefined,
+    });
+  };
+
   const getSelectedText = async () => {
     return new Promise<string>((resolve, reject) => {
       const id = generatePromiseId();
@@ -188,6 +195,7 @@ const SelectableTextView = React.forwardRef<
     unhighlightSelection,
     getSelectedText,
     getHighlights,
+    clearHighlights,
   }));
 
   return (

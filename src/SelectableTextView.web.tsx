@@ -112,11 +112,19 @@ const SelectableTextView = React.forwardRef<
     return "";
   };
 
+  const clearHighlights = () => {
+    iframeRef.current?.contentWindow?.postMessage(
+      JSON.stringify({ type: "clearHighlights" }),
+      "*"
+    );
+  };
+
   React.useImperativeHandle(ref, () => ({
     highlightSelection,
     unhighlightSelection,
     getSelectedText,
     getHighlights,
+    clearHighlights,
   }));
 
   return (

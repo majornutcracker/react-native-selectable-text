@@ -249,6 +249,7 @@ export const htmlContent = ({
           updateHighlights: "updateHighlights",
           highlightSelection: "highlightSelection",
           unhighlightSelection: "unhighlightSelection",
+          clearHighlights: "clearHighlights",
         },
         // out
         events: {
@@ -270,6 +271,8 @@ export const htmlContent = ({
           highlightSelection(value ?? "yellow-highlighter"); // classApplierName
         } else if (type === BridgingNames.functions.unhighlightSelection) {
           unhighlightSelection();
+        } else if (type === BridgingNames.functions.clearHighlights) {
+          clearHighlights();
         } else if (type === BridgingNames.promises.getSelectedText) {
           getSelectedText(value); // promiseId
         } else if (type === BridgingNames.promises.getHighlights) {
@@ -367,6 +370,17 @@ export const htmlContent = ({
           }
         } catch (e) {
           console.error("Failed to unhighlight selection: ", e);
+        }
+      }
+      
+      // @sdk-internal-with-event
+      function clearHighlights() {
+        try {
+          __MNST__.highlighter.removeAllHighlights();
+          clearIgnoredElementsBackgroundColors();
+          sendOnHighlightChange(__MNST__.highlighter.serialize());
+        } catch (e) {
+          console.error("Failed to clear highlights: ", e);
         }
       }
 

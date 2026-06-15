@@ -10,10 +10,11 @@ import {
   type SetStateAction,
 } from "react";
 import { Animated, Pressable, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const FAB_ITEM_SIZE = 44;
 const FAB_ITEM_GAP = 12;
-const FAB_BOTTOM = 96;
+const FAB_BOTTOM = 16;
 
 type ColorFabProps = {
   colorClasses: ColorClass[];
@@ -24,6 +25,9 @@ type ColorFabProps = {
 export function ColorFab(props: ColorFabProps) {
   const [expanded, setExpanded] = useState(false);
   const expandAnim = useRef(new Animated.Value(0)).current;
+
+  const insets = useSafeAreaInsets();
+  const bottom = insets.bottom + FAB_BOTTOM;
 
   const currentColor =
     props.colorClasses.find((c) => c.name === props.currentColorClassName)
@@ -61,7 +65,7 @@ export function ColorFab(props: ColorFabProps) {
         />
       ) : null}
 
-      <View style={styles.colorFabStack} pointerEvents="box-none">
+      <View style={[styles.colorFabStack, { bottom }]} pointerEvents="box-none">
         {props.colorClasses.map((colorClass, index) => {
           const isCurrent = colorClass.name === props.currentColorClassName;
           const staggerStart = index * 0.08;
@@ -175,8 +179,7 @@ const styles = StyleSheet.create({
   },
   colorFabStack: {
     position: "absolute",
-    right: 24,
-    bottom: FAB_BOTTOM,
+    right: 20,
     alignItems: "center",
     width: FAB_ITEM_SIZE,
   },

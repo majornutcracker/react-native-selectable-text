@@ -8,26 +8,32 @@ import {
   Text,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const FAB_ITEM_SIZE = 44;
 const FAB_ITEM_GAP = 12;
-const FAB_BOTTOM = 96;
+const FAB_BOTTOM = 16;
 
 type ActionsFabProps = {
   selectableTextViewRef: RefObject<SelectableTextViewRef | null>;
 };
 
+type ActionFabIconName = "highlights" | "selection" | "clear-highlights";
+
 type ActionFabItem = {
   key: string;
   label: string;
   tint: string;
-  icon: "highlights" | "selection";
+  icon: ActionFabIconName;
   onPress: () => void | Promise<void>;
 };
 
 export function ActionsFab(props: ActionsFabProps) {
   const [expanded, setExpanded] = useState(false);
   const expandAnim = useRef(new Animated.Value(0)).current;
+
+  const insets = useSafeAreaInsets();
+  const bottom = insets.bottom + FAB_BOTTOM;
 
   const actions: ActionFabItem[] = [
     {
@@ -50,6 +56,15 @@ export function ActionsFab(props: ActionsFabProps) {
         const selectedText =
           await props.selectableTextViewRef.current?.getSelectedText();
         Alert.alert("Selected Text", JSON.stringify(selectedText));
+      },
+    },
+    {
+      key: "clear-highlights",
+      label: "Clear Highlights",
+      tint: "#EF4444",
+      icon: "clear-highlights",
+      onPress: () => {
+        props.selectableTextViewRef.current?.clearHighlights();
       },
     },
   ];
@@ -86,7 +101,10 @@ export function ActionsFab(props: ActionsFabProps) {
         />
       ) : null}
 
-      <View style={styles.actionsFabStack} pointerEvents="box-none">
+      <View
+        style={[styles.actionsFabStack, { bottom }]}
+        pointerEvents="box-none"
+      >
         {actions.map((action, index) => {
           const staggerStart = index * 0.12;
           const itemProgress = expandAnim.interpolate({
@@ -171,7 +189,7 @@ export function ActionsFab(props: ActionsFabProps) {
 
 function ActionFabButton(props: {
   tint: string;
-  icon: "highlights" | "selection";
+  icon: ActionFabIconName;
   onPress: () => void;
 }) {
   const pressScale = useRef(new Animated.Value(1)).current;
@@ -198,52 +216,91 @@ function ActionFabButton(props: {
         ]}
       >
         <View style={[styles.actionFabButton, { borderColor: props.tint }]}>
-          {props.icon === "highlights" ? (
-            <View style={styles.highlightIcon}>
-              <View
-                style={[
-                  styles.highlightIconBar,
-                  { backgroundColor: props.tint },
-                ]}
-              />
-              <View
-                style={[
-                  styles.highlightIconBar,
-                  styles.highlightIconBarMid,
-                  { backgroundColor: props.tint },
-                ]}
-              />
-              <View
-                style={[
-                  styles.highlightIconBar,
-                  styles.highlightIconBarShort,
-                  { backgroundColor: props.tint },
-                ]}
-              />
-            </View>
-          ) : (
-            <View style={styles.selectionIcon}>
-              <View
-                style={[
-                  styles.selectionIconBracket,
-                  { borderColor: props.tint },
-                ]}
-              />
-              <Text style={[styles.selectionIconText, { color: props.tint }]}>
-                T
-              </Text>
-              <View
-                style={[
-                  styles.selectionIconBracket,
-                  styles.selectionIconBracketRight,
-                  { borderColor: props.tint },
-                ]}
-              />
-            </View>
-          )}
+          <ActionFabIcon tint={props.tint} icon={props.icon} />
         </View>
       </Animated.View>
     </Pressable>
+  );
+}
+
+function ActionFabIcon(props: { tint: string; icon: ActionFabIconName }) {
+  if (props.icon === "highlights") {
+    return (
+      <View style={styles.highlightIcon}>
+        <View
+          style={[styles.highlightIconBar, { backgroundColor: props.tint }]}
+        />
+        <View
+          style={[
+            styles.highlightIconBar,
+            styles.highlightIconBarMid,
+            { backgroundColor: props.tint },
+          ]}
+        />
+        <View
+          style={[
+            styles.highlightIconBar,
+            styles.highlightIconBarShort,
+            { backgroundColor: props.tint },
+          ]}
+        />
+      </View>
+    );
+  }
+
+  if (props.icon === "clear-highlights") {
+    return (
+      <View style={styles.clearHighlightIcon}>
+        <View style={styles.clearHighlightIconBars}>
+          <View
+            style={[
+              styles.highlightIconBar,
+              { backgroundColor: props.tint, opacity: 0.35 },
+            ]}
+          />
+          <View
+            style={[
+              styles.highlightIconBar,
+              styles.highlightIconBarMid,
+              { backgroundColor: props.tint, opacity: 0.35 },
+            ]}
+          />
+          <View
+            style={[
+              styles.highlightIconBar,
+              styles.highlightIconBarShort,
+              { backgroundColor: props.tint, opacity: 0.35 },
+            ]}
+          />
+        </View>
+        <View
+          style={[styles.clearHighlightStrike, { backgroundColor: props.tint }]}
+        />
+        <View
+          style={[
+            styles.clearHighlightStrike,
+            styles.clearHighlightStrikeCross,
+            { backgroundColor: props.tint },
+          ]}
+        />
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.selectionIcon}>
+      <View
+        style={[styles.selectionIconBracket, { borderColor: props.tint }]}
+      />
+      <Text style={[styles.selectionIconText, { color: props.tint }]}>T</Text>
+      <View
+        style={[
+          styles.selectionIconBracket,
+          styles.selectionIconBracketRight,
+          { borderColor: props.tint },
+        ]}
+      />
+    </View>
   );
 }
 
@@ -259,8 +316,7 @@ const styles = StyleSheet.create({
   },
   actionsFabStack: {
     position: "absolute",
-    left: 24,
-    bottom: FAB_BOTTOM,
+    left: 20,
     alignItems: "flex-start",
     minWidth: FAB_ITEM_SIZE,
   },
@@ -328,6 +384,27 @@ const styles = StyleSheet.create({
   highlightIconBarShort: {
     width: "55%",
     alignSelf: "flex-end",
+  },
+  clearHighlightIcon: {
+    width: 18,
+    height: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  clearHighlightIconBars: {
+    width: 18,
+    height: 14,
+    justifyContent: "space-between",
+  },
+  clearHighlightStrike: {
+    position: "absolute",
+    width: 17,
+    height: 2.5,
+    borderRadius: 2,
+    transform: [{ rotate: "-45deg" }],
+  },
+  clearHighlightStrikeCross: {
+    transform: [{ rotate: "45deg" }],
   },
   selectionIcon: {
     flexDirection: "row",

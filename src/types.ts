@@ -46,6 +46,10 @@ export type SelectableTextViewRef = {
    */
   unhighlightSelection: () => void;
   /**
+   * A function that removes all the highlights
+   */
+  clearHighlights: () => void;
+  /**
    * A promise that returns the selected text
    * @throws
    * @returns The selected text
@@ -133,6 +137,7 @@ export const BridgingNames = {
     updateHighlights: "updateHighlights",
     highlightSelection: "highlightSelection",
     unhighlightSelection: "unhighlightSelection",
+    clearHighlights: "clearHighlights",
   },
   // out
   events: {

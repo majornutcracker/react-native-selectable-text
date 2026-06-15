@@ -223,6 +223,7 @@ export default function MainTest() {
           }}
         />
       </Group>
+      <View style={styles.fabSpace} />
       <ActionsFab selectableTextViewRef={selectableTextViewRef} />
       <ColorFab
         colorClasses={colorClasses}
@@ -267,5 +268,8 @@ const styles = StyleSheet.create({
   },
   selectableText: {
     flex: 1,
+  },
+  fabSpace: {
+    height: 70,
   },
 });
