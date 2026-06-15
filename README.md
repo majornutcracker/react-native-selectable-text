@@ -1,6 +1,8 @@
 # @majornutcracker/react-native-selectable-text
 
-A powerful MajorNutcracker extension for react-native-webview that enables advanced text selection, custom popups, and persistent highlighting via Rangy integration. Built with Expo Modules, it provides a high-performance native bridge (Swift/Kotlin) to seamlessly serialize, sync, and restore web content selections across both Vanilla and Expo projects.
+Expo module for **iOS and Android** built on `react-native-webview`. It enables advanced text selection, custom context menus, and persistent highlighting via Rangy, with a native bridge (Swift/Kotlin) to serialize, sync, and restore HTML content selections.
+
+**Platforms:** iOS, Android. Web is not supported.
 
 # API documentation
 

@@ -141,7 +141,6 @@ export const htmlContent = ({
       const Platform = {
         ios: "ios",
         android: "android",
-        web: "web",
       };
 
       document.documentElement.style.webkitUserSelect = "text";
@@ -156,9 +155,6 @@ export const htmlContent = ({
             platform: "${platform}",
             isIos: "${platform}" === Platform.ios,
             isAndroid: "${platform}" === Platform.android,
-            isWeb: "${platform}" === Platform.web,
-            isNative:
-              "${platform}" === Platform.ios || "${platform}" === Platform.android,
           },
           // selection
           selector: {
@@ -283,10 +279,8 @@ export const htmlContent = ({
       // @native-sender
       function postMessage(type, value) {
         const message = JSON.stringify({ type, value });
-        if (__MNST__.platform.isNative && window.ReactNativeWebView) {
+        if (window.ReactNativeWebView) {
           window.ReactNativeWebView.postMessage(message);
-        } else if (__MNST__.platform.isWeb && window.parent) {
-          window.parent.postMessage(message, "*");
         }
       }
 

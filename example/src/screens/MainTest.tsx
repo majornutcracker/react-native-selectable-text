@@ -56,6 +56,7 @@ const guideContent: HTMLString = `
       <ul>
         <li><code>highlightSelection(colorClassName?)</code> — applies the active color to the cached selection.</li>
         <li><code>unhighlightSelection()</code> — removes highlight from the cached selection.</li>
+        <li><code>clearHighlights()</code> — removes all highlights from the content (left FAB).</li>
         <li><code>getSelectedText()</code> — returns the cached selected text (left FAB).</li>
         <li><code>getHighlights()</code> — returns the serialized highlights string (left FAB).</li>
       </ul>
