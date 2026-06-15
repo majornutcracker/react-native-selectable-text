@@ -21,6 +21,15 @@ export function generatePromiseId(): string {
   return id;
 }
 
+function createIgnoredElementsCss(ignoredElements: string[]): string {
+  return ignoredElements
+    .map(
+      (element) =>
+        `${element} { -webkit-user-select: none; user-select: none; }`
+    )
+    .join("\n");
+}
+
 function uniqueByName(list: ColorClass[]): ColorClass[] {
   const map = new Map<string, ColorClass>();
 
@@ -57,8 +66,14 @@ export const htmlContent = ({
   const highlighterOptionsOverlapping = ho?.overlapping ?? false;
   const highlighterOptions = JSON.stringify({
     ignoreWhiteSpace: ho?.ignoreWhiteSpace ?? true,
-    ignoredElements: ho?.ignoredElements ?? ["a", "sup", "sub"],
   });
+  const ignoredElementsCss = createIgnoredElementsCss(
+    ho?.ignoredElements ?? ["a", "sup", "sub"]
+  );
+  const ignoredElementsString = (
+    ho?.ignoredElements ?? ["a", "sup", "sub"]
+  ).join(", ");
+
   const uniqueCC: ColorClass[] = cC
     ? uniqueByName([
         {
@@ -97,50 +112,7 @@ export const htmlContent = ({
       body {
         position: relative;
       }
-      .tools {
-        display: flex;
-        flex-direction: row;
-        position: absolute;
-        opacity: 0;
-        margin: 0;
-        top: 0;
-        left: 0;
-        padding: 4px 6px;
-        background: #fff;
-        border: 1px solid #ccc;
-        border-radius: 20px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-        z-index: 9999;
-        transition: opacity 0.4s ease;
-      }
-      .tools button {
-        background: none;
-        border: none;
-        margin: 0;
-        padding: 6px 10px;
-        cursor: pointer;
-        font-size: 14px;
-        border-right: 1px solid #ddd;
-        outline: none;
-        user-select: none;
-        -webkit-tap-highlight-color: transparent;
-      }
-      .tools button:last-child {
-        border-right: none;
-      }
-      .tools button:hover {
-        background: transparent;
-      }
-      .tools button:focus,
-      .tools button:active {
-        outline: none;
-        box-shadow: none;
-        background: none;
-      }
-      .no-select {
-        -webkit-user-select: none;
-        user-select: none;
-      }
+      ${ignoredElementsCss}
       ${colorClassesStyle}
     </style>
   </head>
@@ -225,9 +197,6 @@ export const htmlContent = ({
               rangy.createClassApplier(name, {
                 ignoreWhiteSpace: highlighterOptions.ignoreWhiteSpace ?? true,
                 elementTagName: "span",
-                ignoreSelector: highlighterOptions.ignoredElements
-                  ? highlighterOptions.ignoredElements.map((s) => s.trim()).join(", ")
-                  : "",
               })
             );
           });
@@ -355,6 +324,7 @@ export const htmlContent = ({
         try {
           __MNST__.highlighter.removeAllHighlights();
           __MNST__.highlighter.deserialize(highlights);
+          clearIgnoredElementsBackgroundColors();
           sendOnHighlightChange(__MNST__.highlighter.serialize());
         } catch (e) {
           console.error("Failed to restore highlights: ", e);
@@ -375,6 +345,7 @@ export const htmlContent = ({
                   ? !__MNST__.overlapping
                   : true,
             });
+            clearIgnoredElementsBackgroundColors();
             sendOnHighlightChange(__MNST__.highlighter.serialize());
           }
         } catch (e) {
@@ -391,6 +362,7 @@ export const htmlContent = ({
           const rangySel = rangy.getSelection();
           if (!rangySel.isCollapsed) {
             __MNST__.highlighter.unhighlightSelection();
+            clearIgnoredElementsBackgroundColors();
             sendOnHighlightChange(__MNST__.highlighter.serialize());
           }
         } catch (e) {
@@ -421,6 +393,34 @@ export const htmlContent = ({
           console.error("Failed to get highlights: ", e);
           sendGetHighlights(id, false, undefined, e.message);
         }
+      }
+
+      // <------------------- Internal utils functions ------------------------>
+      
+      function clearIgnoredElementsBackgroundColors() {
+        const ignoredSelector = "${ignoredElementsString}".trim();
+        if (!ignoredSelector) {
+          return [];
+        }
+
+        const selector = ${applierNames}
+          .map((c) => "."+c)
+          .join(", ");
+        if (!selector) {
+          return [];
+        }
+
+        const roots = [...document.querySelectorAll(ignoredSelector)];
+
+        const nodes = roots.flatMap((root) =>
+          Array.from(root.querySelectorAll(selector))
+        );
+
+        nodes.forEach((node) => {
+          node.style.backgroundColor = "transparent";
+        });
+
+        return nodes;
       }
 
       true;

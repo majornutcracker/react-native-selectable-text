@@ -89,6 +89,7 @@ export type SelectableTextViewPropsBase = {
   css?: CSSString;
   /**
    * --> Final property
+   * A rangy highlighter and classApplier options object.
    * A object which represents the available highlighter options
    */
   highlighterOptions?: HighlighterOptions;
