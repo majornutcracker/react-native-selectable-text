@@ -19,19 +19,18 @@ export type HighlighterOptions = {
    * A boolean to enable the overlap of highlights
    * @default false
    */
-  overlapping: boolean;
+  overlapping?: boolean;
   /**
    * A boolean indicating whether to ignore insignificant whitespace text nodes
    * (e.g., line breaks or indentation between <p> tags in the HTML).
    * @default true
    */
-  ignoreWhiteSpace: boolean;
+  ignoreWhiteSpace?: boolean;
   /**
    * A list of tag or classes to avoid on selection (e.g., 'a', '.no-select' )
-   * If you use custom class names ('.no-select'), you need to add this class in your html content.
    * @default ['a','sub','sup']
    */
-  ignoredElements: string[];
+  ignoredElements?: string[];
 };
 
 export type SelectableTextViewRef = {

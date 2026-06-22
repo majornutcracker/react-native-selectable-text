@@ -109,9 +109,6 @@ export const htmlContent = ({
         padding: 0;
         width: 100%;
       }
-      body {
-        position: relative;
-      }
       ${ignoredElementsCss}
       ${colorClassesStyle}
     </style>

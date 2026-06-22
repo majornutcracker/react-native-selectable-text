@@ -152,6 +152,8 @@ const cssContent: CSSString = `
 }
 `;
 
+const TEST_HIGHLIGHTS = `type:textContent|112$183$14$highlight-mint$|309$328$16$highlight-violet$|406$460$15$highlight-sky$`;
+
 const colorClasses: ColorClass[] = [
   { name: "highlight-amber", color: "#FCD34D" },
   { name: "highlight-coral", color: "#FB7185" },
@@ -261,26 +263,26 @@ function Group(props: {
 const styles = StyleSheet.create({
   header: {
     fontSize: 30,
-    margin: 20,
   },
   groupHeader: {
     fontSize: 20,
-    marginBottom: 20,
   },
   group: {
-    margin: 20,
     backgroundColor: "#fff",
     borderRadius: 10,
+    gap: 20,
     padding: 20,
   },
   container: {
     flex: 1,
+    padding: 20,
+    gap: 20,
     backgroundColor: "#eee",
   },
   selectableText: {
     flex: 1,
   },
   fabSpace: {
-    height: 70,
+    height: 50,
   },
 });

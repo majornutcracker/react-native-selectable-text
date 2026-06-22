@@ -42,9 +42,13 @@ export function ActionsFab(props: ActionsFabProps) {
       tint: "#F59E0B",
       icon: "highlights",
       onPress: async () => {
-        const highlights =
-          await props.selectableTextViewRef.current?.getHighlights();
-        Alert.alert("Highlights", JSON.stringify(highlights));
+        try {
+          const highlights =
+            await props.selectableTextViewRef.current?.getHighlights();
+          Alert.alert("Highlights", JSON.stringify(highlights));
+        } catch (error) {
+          Alert.alert("Error", error as string);
+        }
       },
     },
     {
@@ -53,9 +57,13 @@ export function ActionsFab(props: ActionsFabProps) {
       tint: "#3B82F6",
       icon: "selection",
       onPress: async () => {
-        const selectedText =
-          await props.selectableTextViewRef.current?.getSelectedText();
-        Alert.alert("Selected Text", JSON.stringify(selectedText));
+        try {
+          const selectedText =
+            await props.selectableTextViewRef.current?.getSelectedText();
+          Alert.alert("Selected Text", JSON.stringify(selectedText));
+        } catch (error) {
+          Alert.alert("Error", error as string);
+        }
       },
     },
     {
