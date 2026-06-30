@@ -448,7 +448,10 @@ export const htmlContent = ({
         );
 
         nodes.forEach((node) => {
-          node.style.backgroundColor = "transparent";
+          while (node.firstChild) {
+            node.parentNode.insertBefore(node.firstChild, node);
+          }
+          node.remove();
         });
 
         return nodes;

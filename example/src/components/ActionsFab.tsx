@@ -1,3 +1,4 @@
+import Clipboard from "@react-native-clipboard/clipboard";
 import { SelectableTextViewRef } from "@majornutcracker/react-native-selectable-text";
 import { useEffect, useRef, useState, type RefObject } from "react";
 import {
@@ -45,7 +46,15 @@ export function ActionsFab(props: ActionsFabProps) {
         try {
           const highlights =
             await props.selectableTextViewRef.current?.getHighlights();
-          Alert.alert("Highlights", JSON.stringify(highlights));
+          Alert.alert("Highlights", highlights, [
+            {
+              text: "Copy",
+              onPress: () => {
+                highlights ? Clipboard.setString(highlights) : undefined;
+              },
+            },
+            { text: "OK", style: "cancel" },
+          ]);
         } catch (error) {
           Alert.alert("Error", error as string);
         }
