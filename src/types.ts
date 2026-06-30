@@ -33,6 +33,24 @@ export type HighlighterOptions = {
   ignoredElements?: string[];
 };
 
+export type SelectableTextViewOptions = {
+  /**
+   * A boolean indicating whether to enable the user scaling of the content.
+   * @default true
+   */
+  userScalable?: boolean;
+  /**
+   * A unsigned number indicating the initial scale of the content.
+   * @default 1
+   */
+  initialScale?: number;
+  /**
+   * A unsigned number indicating the maximum scale of the content.
+   * @default 2.5
+   */
+  maximumScale?: number;
+};
+
 export type SelectableTextViewRef = {
   /**
    * A function that applies highlighting to the current selection with a colorClassName previously defined in the colorClasses property;
@@ -97,6 +115,11 @@ export type SelectableTextViewPropsBase = {
    */
   highlighterOptions?: HighlighterOptions;
   /**
+   * --> Final property
+   * A object which represents the available options to customize the behavior of the component.
+   */
+  options?: SelectableTextViewOptions;
+  /**
    * --> State property
    * A callback function that will be called when the user clicks on a link in the content.
    * The callback will receive the URL of the link that was clicked.
@@ -142,6 +165,8 @@ export const BridgingNames = {
   events: {
     onTextSelectionChange: "onTextSelectionChange",
     onHighlightsChange: "onHighlightsChange",
+    // dev
+    log: "log",
   },
   // in - out
   promises: {

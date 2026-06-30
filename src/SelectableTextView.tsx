@@ -26,6 +26,7 @@ const SelectableTextView = React.forwardRef<
     content,
     css,
     highlighterOptions,
+    options,
     onLink,
     onTextSelectionChange,
     onHighlightsChange,
@@ -48,6 +49,7 @@ const SelectableTextView = React.forwardRef<
       css: css,
       ho: highlighterOptions,
       p: Platform.OS,
+      o: options,
     }),
   });
 
@@ -84,6 +86,8 @@ const SelectableTextView = React.forwardRef<
           );
         }
         delete promises.current[id];
+      } else if (data.type === BridgingNames.events.log) {
+        console.log("Log: ", data.value);
       }
     },
     [onTextSelectionChange, onHighlightsChange]

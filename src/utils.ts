@@ -12,6 +12,7 @@ import {
   HTMLString,
   HighlighterOptions,
   Highlights,
+  SelectableTextViewOptions,
 } from "./types";
 
 export function generatePromiseId(): string {
@@ -46,6 +47,23 @@ function colorClassesToCSS(list: ColorClass[]): string {
     .join("\n");
 }
 
+function sanitizeOptions(
+  options: SelectableTextViewOptions | undefined
+): SelectableTextViewOptions {
+  if (!options) {
+    return {
+      userScalable: true,
+      initialScale: 1,
+      maximumScale: 2.5,
+    };
+  }
+  return {
+    userScalable: options.userScalable ?? true,
+    initialScale: Math.abs(options.initialScale ?? 1),
+    maximumScale: Math.abs(options.maximumScale ?? 2.5),
+  };
+}
+
 export const htmlContent = ({
   cC,
   h,
@@ -53,6 +71,7 @@ export const htmlContent = ({
   css,
   ho,
   p,
+  o,
 }: {
   cC: ColorClass[] | undefined;
   h: Highlights | undefined;
@@ -60,7 +79,9 @@ export const htmlContent = ({
   css: CSSString | undefined;
   ho: HighlighterOptions | undefined;
   p: string;
+  o: SelectableTextViewOptions | undefined;
 }) => {
+  const options = sanitizeOptions(o);
   const platform = p;
   const highlights = h;
   const highlighterOptionsOverlapping = ho?.overlapping ?? false;
@@ -99,7 +120,7 @@ export const htmlContent = ({
   <head>
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+      content="width=device-width, initial-scale=${options.initialScale}, maximum-scale=${options.maximumScale}, user-scalable=${options.userScalable ? "yes" : "no"}"
     />
     <style>
       ${style}
@@ -248,6 +269,8 @@ export const htmlContent = ({
         events: {
           onTextSelectionChange: "onTextSelectionChange",
           onHighlightsChange: "onHighlightsChange",
+          // dev
+          log: "log",
         },
         // in - out
         promises: {
@@ -315,6 +338,9 @@ export const htmlContent = ({
 
       // @sdk-internal-with-event
       function updateHighlights(highlights) {
+        if (!highlights) {
+          return;
+        }
         try {
           __MNST__.highlighter.removeAllHighlights();
           __MNST__.highlighter.deserialize(highlights);
@@ -426,6 +452,21 @@ export const htmlContent = ({
         });
 
         return nodes;
+      }
+
+      // @dev
+      function nativeLog(message) {
+        try {
+          const json = JSON.stringify(message, null, 2);
+          console.log(message);
+          postMessage(BridgingNames.events.log, json);
+        } catch (e) {
+          console.error("Failed to log: ", e);
+          postMessage(
+            BridgingNames.events.log, 
+            e.message ?? "Unknown error while stringifying message for logging"
+          );
+        }
       }
 
       true;

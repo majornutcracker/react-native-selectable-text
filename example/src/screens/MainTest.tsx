@@ -209,7 +209,7 @@ export default function MainTest() {
           content={guideContent}
           css={cssContent}
           highlighterOptions={{
-            overlapping: false,
+            overlapping: true,
             ignoreWhiteSpace: true,
             ignoredElements: [
               "a",
@@ -223,6 +223,11 @@ export default function MainTest() {
               "h5",
               "h6",
             ],
+          }}
+          options={{
+            userScalable: false,
+            initialScale: 1,
+            maximumScale: 1,
           }}
           onLink={(url) => {
             console.log("link", url);
