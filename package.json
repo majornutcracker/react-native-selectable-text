@@ -60,11 +60,11 @@
     "ios",
     "android"
   ],
-  "repository": "https://github.com/majornutcracker-dev/react-native-selectable-text",
+  "repository": "https://github.com/majornutcracker/react-native-selectable-text",
   "bugs": {
-    "url": "https://github.com/majornutcracker-dev/react-native-selectable-text/issues"
+    "url": "https://github.com/majornutcracker/react-native-selectable-text/issues"
   },
-  "author": "Majornutcracker <joshiparsa@gmail.com> (https://github.com/majornutcracker-dev)",
+  "author": "Majornutcracker <joshiparsa@gmail.com> (https://github.com/majornutcracker)",
   "license": "MIT",
   "homepage": "https://developer.majornutcracker.com/docs/react-native-selectable-text",
   "devDependencies": {

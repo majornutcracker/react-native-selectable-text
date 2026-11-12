@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The GitHub account moved from `majornutcracker-dev` to `majornutcracker`.
+  The `repository`, `bugs` and `author` fields, the podspec source and every
+  link in the shipped docs now point at
+  `github.com/majornutcracker/react-native-selectable-text`.
+
 ## [1.2.1] - 2026-10-09
 
 ### Fixed
@@ -104,8 +111,8 @@ Initial release.
 - Font helpers (`googleFonts()`, `mergeFonts()`), ignored elements, and viewport
   zoom options.
 
-[unreleased]: https://github.com/majornutcracker-dev/react-native-selectable-text/compare/v1.2.1...HEAD
-[1.2.1]: https://github.com/majornutcracker-dev/react-native-selectable-text/compare/v1.2.0...v1.2.1
-[1.2.0]: https://github.com/majornutcracker-dev/react-native-selectable-text/compare/v1.1.0...v1.2.0
-[1.1.0]: https://github.com/majornutcracker-dev/react-native-selectable-text/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/majornutcracker-dev/react-native-selectable-text/releases/tag/v1.0.0
+[unreleased]: https://github.com/majornutcracker/react-native-selectable-text/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/majornutcracker/react-native-selectable-text/compare/v1.2.0...v1.2.1
+[1.2.0]: https://github.com/majornutcracker/react-native-selectable-text/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/majornutcracker/react-native-selectable-text/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/majornutcracker/react-native-selectable-text/releases/tag/v1.0.0
