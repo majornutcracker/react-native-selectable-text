@@ -18,7 +18,7 @@ Found a security issue? Do **not** open a public issue — see [SECURITY.md](./S
 ## Getting started
 
 ```sh
-git clone https://github.com/majornutcracker-dev/react-native-selectable-text
+git clone https://github.com/majornutcracker/react-native-selectable-text
 cd react-native-selectable-text
 nvm use
 corepack enable

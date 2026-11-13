@@ -29,7 +29,7 @@ Web is not supported.
 
 ## Demo
 
-Basic usage from the [example app](https://github.com/majornutcracker-dev/react-native-selectable-text/tree/main/example): selecting text, highlight
+Basic usage from the [example app](https://github.com/majornutcracker/react-native-selectable-text/tree/main/example): selecting text, highlight
 entrance and exit animations, the focus effect, and focusing and removing a
 highlight.
 
@@ -41,14 +41,14 @@ highlight.
   <tr>
     <td>
       <img
-        src="https://github.com/majornutcracker-dev/react-native-selectable-text/raw/main/assets/ios.gif"
+        src="https://github.com/majornutcracker/react-native-selectable-text/raw/main/assets/ios.gif"
         width="280"
         alt="iOS: selecting text, highlighting it with an entrance animation, focusing a highlight, and removing it with an exit animation"
       />
     </td>
     <td>
       <img
-        src="https://github.com/majornutcracker-dev/react-native-selectable-text/raw/main/assets/android.gif"
+        src="https://github.com/majornutcracker/react-native-selectable-text/raw/main/assets/android.gif"
         width="280"
         alt="Android: selecting text, highlighting it with an entrance animation, focusing a highlight, and removing it with an exit animation"
       />
@@ -146,16 +146,16 @@ see the [API reference](./docs/REFERENCE.md#restoring-replacing-and-undoing).
 - **[API reference](./docs/REFERENCE.md)** — every prop, callback, and ref
   method, plus highlighter styles and animations, fonts, error codes, ignored
   elements, and the content trust boundary.
-- **[`example/`](https://github.com/majornutcracker-dev/react-native-selectable-text/tree/main/example)** — a runnable reader app with three documents, each
+- **[`example/`](https://github.com/majornutcracker/react-native-selectable-text/tree/main/example)** — a runnable reader app with three documents, each
   a different HTML/CSS design, showing animated highlight entrances and exits.
   Open the native projects with `yarn open:ios` / `yarn open:android`.
 
 ## Contributing
 
-Contributions are welcome! See [CONTRIBUTING.md](https://github.com/majornutcracker-dev/react-native-selectable-text/blob/main/CONTRIBUTING.md) for setup,
+Contributions are welcome! See [CONTRIBUTING.md](https://github.com/majornutcracker/react-native-selectable-text/blob/main/CONTRIBUTING.md) for setup,
 workflow, and commit conventions.
 
-Hit a blocker, need a feature, or found a bug? [Open an issue](https://github.com/majornutcracker-dev/react-native-selectable-text/issues)
+Hit a blocker, need a feature, or found a bug? [Open an issue](https://github.com/majornutcracker/react-native-selectable-text/issues)
 — we follow them closely and keep improving the library.
 
 ## License

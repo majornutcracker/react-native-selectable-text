@@ -75,8 +75,8 @@ For each release:
    `### Fixed`, or `### Security`.
 3. Update the link references at the bottom:
    ```md
-   [unreleased]: https://github.com/majornutcracker-dev/react-native-selectable-text/compare/v1.1.0...HEAD
-   [1.1.0]: https://github.com/majornutcracker-dev/react-native-selectable-text/compare/v1.0.0...v1.1.0
+   [unreleased]: https://github.com/majornutcracker/react-native-selectable-text/compare/v1.1.0...HEAD
+   [1.1.0]: https://github.com/majornutcracker/react-native-selectable-text/compare/v1.0.0...v1.1.0
    ```
 
 This file is maintainer-only: it is excluded from the npm package (see `files` in

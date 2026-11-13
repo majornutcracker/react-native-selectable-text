@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
     :tvos => '16.4'
   }
   s.swift_version  = '5.9'
-  s.source         = { git: 'https://github.com/majornutcracker-dev/react-native-selectable-text' }
+  s.source         = { git: 'https://github.com/majornutcracker/react-native-selectable-text' }
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'

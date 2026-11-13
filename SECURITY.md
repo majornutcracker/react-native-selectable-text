@@ -17,7 +17,7 @@ Only the latest published minor release of
 Report privately through either channel:
 
 1. **GitHub Security Advisories** (preferred) — use
-   [Report a vulnerability](https://github.com/majornutcracker-dev/react-native-selectable-text/security/advisories/new)
+   [Report a vulnerability](https://github.com/majornutcracker/react-native-selectable-text/security/advisories/new)
    on this repository. This keeps the report private until a fix is published.
 2. **Email** — <joshiparsa@gmail.com> with `SECURITY` in the subject.
 

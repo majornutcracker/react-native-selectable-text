@@ -5,7 +5,7 @@ selection, [Rangy](https://github.com/timdown/rangy)-backed highlights, and a
 message bridge to React Native.
 
 This page is the full surface. For a quick start see the
-[README](../README.md); for a runnable demo see [`example/`](https://github.com/majornutcracker-dev/react-native-selectable-text/tree/main/example).
+[README](../README.md); for a runnable demo see [`example/`](https://github.com/majornutcracker/react-native-selectable-text/tree/main/example).
 
 ## Props
 
@@ -341,7 +341,7 @@ callout so a highlight's entrance animation is visible; pass
 `{ keepSelection: true }` to chain another action on the same text — see
 [`SelectionActionOptions`](#selectionactionoptions).
 
-[`example/src/screens/Reader.tsx`](https://github.com/majornutcracker-dev/react-native-selectable-text/blob/main/example/src/screens/Reader.tsx)
+[`example/src/screens/Reader.tsx`](https://github.com/majornutcracker/react-native-selectable-text/blob/main/example/src/screens/Reader.tsx)
 wires this up with a validated variant as well, and lets you pick which
 highlighter the menu applies.
 
@@ -601,7 +601,7 @@ useEffect(() => {
 }, []);
 ```
 
-The [example app](https://github.com/majornutcracker-dev/react-native-selectable-text/tree/main/example) does exactly this, in `useScrollRestore`.
+The [example app](https://github.com/majornutcracker/react-native-selectable-text/tree/main/example) does exactly this, in `useScrollRestore`.
 
 ### Page → React Native: `window.SelectableText.postMessage`
 
@@ -655,4 +655,4 @@ API and can change in any release. Build on the bridge instead.
 
 `content` is rendered as-is; the module does not sanitize it. If the HTML comes
 from an untrusted source, sanitize it before passing it in. See
-[SECURITY.md](https://github.com/majornutcracker-dev/react-native-selectable-text/blob/main/SECURITY.md) for the full trust boundary.
+[SECURITY.md](https://github.com/majornutcracker/react-native-selectable-text/blob/main/SECURITY.md) for the full trust boundary.
