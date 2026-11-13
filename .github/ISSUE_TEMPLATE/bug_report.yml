@@ -37,7 +37,7 @@ body:
     id: package-version
     attributes:
       label: "@majornutcracker/react-native-selectable-text version"
-      placeholder: 1.2.1
+      placeholder: 1.2.2
     validations:
       required: true
 
