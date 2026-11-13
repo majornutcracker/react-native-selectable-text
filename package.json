@@ -1,6 +1,6 @@
 {
   "name": "@majornutcracker/react-native-selectable-text",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Text selection and persistent, animated highlights for HTML in React Native and Expo (iOS & Android). Serialize, restore and sync highlights. Built on react-native-webview and Rangy.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

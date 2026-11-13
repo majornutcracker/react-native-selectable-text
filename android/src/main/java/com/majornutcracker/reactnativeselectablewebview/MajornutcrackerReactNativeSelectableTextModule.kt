@@ -8,7 +8,7 @@ class MajornutcrackerReactNativeSelectableTextModule : Module() {
     Name("MajornutcrackerReactNativeSelectableText")
 
     Constant("version") {
-      "1.2.1"
+      "1.2.2"
     }
   }
 }
