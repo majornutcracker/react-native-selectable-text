@@ -7,11 +7,11 @@ import {
   useState,
   type RefObject,
 } from "react";
-import type { WebViewProps } from "react-native-webview";
+import type { WebViewScrollEvent } from "react-native-webview/lib/WebViewTypes";
 
 import { useHighlights } from "@/context/HighlightsProvider";
 
-type ScrollHandler = NonNullable<WebViewProps["onScroll"]>;
+type ScrollHandler = (event: WebViewScrollEvent) => void;
 
 /**
  * The restore runs on mount, so this covers the page load as well as the web

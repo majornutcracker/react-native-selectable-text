@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `react-native-webview` v14 is now supported: the peer range is
+  `^13.16.1 || ^14.0.1`, so Expo SDK 57 (v13) and SDK 58 (v14) both install
+  without a peer warning. The only breaking change in v14 is Android API 24 as
+  the minimum.
+- Development and the example app moved to Expo SDK 58 (React Native 0.88.1,
+  React 19.3.0).
+
+### Security
+
+- Refreshed both lockfiles to close the open Dependabot alerts in
+  `node-forge`, `fast-uri`, `glob`, `zod` and `decode-uri-component`. They all
+  came from development tooling and the example app; the published package has
+  no runtime dependencies, so installs were never affected.
+
 ## [1.2.2] - 2026-11-12
 
 ### Changed

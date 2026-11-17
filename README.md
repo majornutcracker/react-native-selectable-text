@@ -88,7 +88,7 @@ first, then run `npx pod-install`. Expo Go needs nothing else: the native module
 is optional and `react-native-webview` already ships inside it.
 
 **Peer dependencies:** `expo`, `react`, `react-native`, and
-`react-native-webview` `^13.16.1` (`>=13.16.1 <14`; v14 ships incompatible types).
+`react-native-webview` `^13.16.1 || ^14.0.1` (v13 for Expo SDK 57, v14 for SDK 58).
 
 ## Quick start
 
