@@ -183,12 +183,26 @@ npm takes a few minutes to show a new version, and the checks below lag behind i
   versions tab reads npm live; the score and the rest of the card follow at the next rebuild.
   `https://reactnative.directory/api/libraries?search=selectable-text` shows what it holds.
 
-### Required repository secret
+### Publishing credentials
 
-- `NPM_TOKEN` — an npm automation token with publish rights on the `@majornutcracker` scope.
-  It is the only publishing credential today, and it is meant to be replaced by npm Trusted
-  Publishing (OIDC from GitHub Actions) when the GitHub account is renamed, because the trusted
-  publisher pins the owner and repository.
+The workflow is moving from a token to npm **Trusted Publishing** (OIDC from GitHub Actions).
+While both are in place, npm tries OIDC first and only falls back to the token.
+
+- **Trusted publisher** — configured on npmjs.com under the package's Settings → Trusted
+  Publisher: owner `majornutcracker`, repository `react-native-selectable-text`, workflow
+  `release.yml`, no environment, **Allow npm publish** enabled. It needs npm >= 11.5.1, which
+  the `Upgrade npm for trusted publishing` step installs, and the `id-token: write`
+  permission. A new configuration expires if it does not publish within 2 days.
+- `NPM_TOKEN` — the npm automation token the workflow used before. It stays as a fallback
+  until a release shows `GitHub Actions` as the publisher:
+
+  ```sh
+  npm view @majornutcracker/react-native-selectable-text _npmUser --prefer-online
+  ```
+
+  Then remove `NODE_AUTH_TOKEN` and the `registry-url` step from the workflow, revoke the token
+  on npmjs.com, delete the `NPM_TOKEN` secret and set Publishing access to "Require
+  two-factor authentication and disallow bypass 2fa tokens".
 
 > Tip: the native/gradle files duplicate the version by hand, which is easy to forget. A future
 > improvement is to read the version from `package.json` in `build.gradle` and expose the JS
