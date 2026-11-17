@@ -185,24 +185,32 @@ npm takes a few minutes to show a new version, and the checks below lag behind i
 
 ### Publishing credentials
 
-The workflow is moving from a token to npm **Trusted Publishing** (OIDC from GitHub Actions).
-While both are in place, npm tries OIDC first and only falls back to the token.
+The workflow publishes through npm **Trusted Publishing** (OIDC from GitHub Actions). There
+is no npm token and no repository secret: npm trusts this repository's `release.yml` and
+nothing else. v1.3.0 was the first release published this way.
 
-- **Trusted publisher** — configured on npmjs.com under the package's Settings → Trusted
-  Publisher: owner `majornutcracker`, repository `react-native-selectable-text`, workflow
-  `release.yml`, no environment, **Allow npm publish** enabled. It needs npm >= 11.5.1, which
-  the `Upgrade npm for trusted publishing` step installs, and the `id-token: write`
-  permission. A new configuration expires if it does not publish within 2 days.
-- `NPM_TOKEN` — the npm automation token the workflow used before. It stays as a fallback
-  until a release shows `GitHub Actions` as the publisher:
+- **Trusted publisher** — on npmjs.com under the package's Settings → Trusted Publisher:
+  owner `majornutcracker`, repository `react-native-selectable-text`, workflow
+  `release.yml`, no environment, **Allow npm publish** enabled. All fields are case-sensitive,
+  and a connection cannot be edited once created — to change one, delete it and create a
+  new one, which must publish within 2 days or it expires.
+- **What the workflow needs** — the `id-token: write` permission, a GitHub-hosted runner, and
+  npm >= 11.5.1, which the `Upgrade npm for trusted publishing` step installs (Node 22 ships
+  npm 10).
+- **Publishing access** — set to "Require two-factor authentication and disallow bypass 2fa
+  tokens", so a leaked token cannot publish. Trusted publishing is unaffected by that setting.
 
-  ```sh
-  npm view @majornutcracker/react-native-selectable-text _npmUser --prefer-online
-  ```
+Renaming the GitHub account or the repository, or renaming `release.yml`, breaks publishing
+until the trusted publisher is recreated to match. Provenance is generated automatically;
+`--provenance` stays in the publish command only to make it explicit.
 
-  Then remove `NODE_AUTH_TOKEN` and the `registry-url` step from the workflow, revoke the token
-  on npmjs.com, delete the `NPM_TOKEN` secret and set Publishing access to "Require
-  two-factor authentication and disallow bypass 2fa tokens".
+To confirm who published a version:
+
+```sh
+npm view @majornutcracker/react-native-selectable-text _npmUser --prefer-online
+```
+
+A trusted publish shows `GitHub Actions` with a `trustedPublisher` entry.
 
 > Tip: the native/gradle files duplicate the version by hand, which is easy to forget. A future
 > improvement is to read the version from `package.json` in `build.gradle` and expose the JS

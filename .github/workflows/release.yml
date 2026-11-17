@@ -70,18 +70,9 @@ jobs:
       - run: yarn test
       - run: yarn typecheck
 
-      # `registry-url` writes an .npmrc that reads ${NODE_AUTH_TOKEN}, which only
-      # the Publish step defines. Yarn 1 aborts on an undefined variable in that
-      # file, so this has to come after every yarn command.
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-          registry-url: https://registry.npmjs.org
-          package-manager-cache: false
-
-      # npm trusted publishing (OIDC) needs npm >= 11.5.1; Node 22 bundles npm 10.
-      # npm tries OIDC first and falls back to NODE_AUTH_TOKEN, so the token stays
-      # until a release confirms the trusted publisher works.
+      # Publishing authenticates through npm trusted publishing (OIDC, using the
+      # `id-token: write` permission above); there is no npm token. It needs
+      # npm >= 11.5.1, and Node 22 bundles npm 10.
       - name: Upgrade npm for trusted publishing
         run: |
           npm install --global npm@11
@@ -90,8 +81,6 @@ jobs:
       # `prepublishOnly` (expo-module prepublishOnly) builds the package first.
       - name: Publish
         run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create GitHub Release
         run: gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes
