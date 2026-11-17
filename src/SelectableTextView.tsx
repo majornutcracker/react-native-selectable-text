@@ -91,7 +91,7 @@ const SelectableTextView = React.forwardRef<
     delete promises.current[id];
   };
 
-  const webviewRef = React.useRef<WebView>(null);
+  const webviewRef = React.useRef<WebView<object>>(null);
 
   // Which selection the last getSelectedText() read, so an action decided on
   // that text can refuse to land on a different one.
