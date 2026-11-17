@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-11-17
+
 ### Changed
 
 - `react-native-webview` v14 is now supported: the peer range is
@@ -129,7 +131,8 @@ Initial release.
 - Font helpers (`googleFonts()`, `mergeFonts()`), ignored elements, and viewport
   zoom options.
 
-[unreleased]: https://github.com/majornutcracker/react-native-selectable-text/compare/v1.2.2...HEAD
+[unreleased]: https://github.com/majornutcracker/react-native-selectable-text/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/majornutcracker/react-native-selectable-text/compare/v1.2.2...v1.3.0
 [1.2.2]: https://github.com/majornutcracker/react-native-selectable-text/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/majornutcracker/react-native-selectable-text/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/majornutcracker/react-native-selectable-text/compare/v1.1.0...v1.2.0
