@@ -697,4 +697,4 @@ export const BridgingNames = {
  */
 export const HISTORY_LIMIT = 50;
 
-export const VERSION = "1.2.2";
+export const VERSION = "1.3.0";
